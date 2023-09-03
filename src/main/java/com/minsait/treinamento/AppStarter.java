@@ -8,8 +8,8 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "classpath:application.yml")
 public class AppStarter {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AppStarter.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(AppStarter.class, args);
+    }
+    
 }
