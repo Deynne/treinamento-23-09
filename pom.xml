@@ -44,6 +44,17 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- Dependência responsável pelo swagger -->
+        <dependency>
+           <groupId>io.springfox</groupId>
+           <artifactId>springfox-boot-starter</artifactId>
+           <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
