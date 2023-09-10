@@ -21,7 +21,7 @@ public class InfoRest {
     private InfoService service;
 
     @GetMapping("get-app-config")
-    public ResponseEntity<Map<String, Object>> getApplicationPropertiesData() {
+    public ResponseEntity<List<String>> getApplicationPropertiesData() {
         return ResponseEntity.status(HttpStatus.OK).body(this.service.getInfo());
     }
 }
