@@ -1,8 +1,6 @@
 package com.minsait.treinamento.controller.rest;
 
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,5 +21,10 @@ public class InfoRest {
     @GetMapping("get-app-config")
     public ResponseEntity<List<String>> getApplicationPropertiesData() {
         return ResponseEntity.status(HttpStatus.OK).body(this.service.getInfo());
+    }
+    
+    @GetMapping("exception-test")
+    public ResponseEntity<Object> getException() {
+        return ResponseEntity.ok(this.service.throwException());
     }
 }

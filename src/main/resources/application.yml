@@ -45,3 +45,10 @@ logging:
     pattern:
         console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
         file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+
+treinamento:
+    custom-message:
+        bundle:
+            name: messages
+            extension: properties
+            charset: java.nio.charset.StandardCharsets.UTF_8
