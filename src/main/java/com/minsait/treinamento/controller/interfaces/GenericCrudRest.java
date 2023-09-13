@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-
+import javax.validation.constraints.Positive;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,14 +31,14 @@ public interface GenericCrudRest<I extends Number, P,U,B> {
     
     @DeleteMapping
     public ResponseEntity<B> excluir(@RequestParam 
-                                     @PositiveOrZero(message = "O id não pode ser negativo") 
-                                     @NotNull(message = "O id não pode ser nulo.") 
+                                     @Positive
+                                     @NotNull
                                      I id);
     
     @GetMapping
     public ResponseEntity<B> encontrarPorId(@RequestParam 
-                                      @PositiveOrZero(message = "O id não pode ser negativo") 
-                                      @NotNull(message = "O id não pode ser nulo.") 
+                                      @Positive
+                                      @NotNull
                                       I id);
     
     @GetMapping("/all")
