@@ -37,4 +37,8 @@ public class GenericException extends RuntimeException {
         this(validacao,exception);
         this.parametros = Arrays.asList(params);
     }
+    
+    public String getDescricaoMensagem() {
+        return this.validacao.getDescricaoMsg(this.parametros.toArray(new String[0]));
+    }
 }
