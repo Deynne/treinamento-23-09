@@ -129,7 +129,3 @@ public class MessageConfig {
             }
             return bundle;
         }
-        
-    }
-
-}
