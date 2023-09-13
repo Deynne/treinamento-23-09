@@ -1,5 +1,7 @@
 package com.minsait.treinamento.exceptions;
 
+import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -52,98 +54,101 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleHttpMediaTypeNotSupported(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleHttpMediaTypeNotAcceptable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleMissingPathVariable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleMissingServletRequestParameter(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleServletRequestBindingException(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleConversionNotSupported(ConversionNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleConversionNotSupported(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleTypeMismatch(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleHttpMessageNotWritable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
-        return super.handleMethodArgumentNotValid(ex, headers, status, request);
+        ExceptionDTO body = new ExceptionDTO(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO,HttpStatus.BAD_REQUEST.value(),null);
+        
+        ex.getAllErrors().forEach(error -> body.addDetalhe(ConstraintUtils.getConstraintMessage(error)));
+        return this.handleExceptionInternal(ex, body, headers, status, request);
+//        return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestPart(MissingServletRequestPartException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleMissingServletRequestPart(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status,
             WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleBindException(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         return super.handleNoHandlerFoundException(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleAsyncRequestTimeoutException(AsyncRequestTimeoutException ex,
             HttpHeaders headers, HttpStatus status, WebRequest webRequest) {
-        // TODO Auto-generated method stub
+        
         return super.handleAsyncRequestTimeoutException(ex, headers, status, webRequest);
     }
 
@@ -199,14 +204,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     private void printException(Exception ex, WebRequest request) {
-        // TODO Auto-generated method stub
+        
         
     }
 
-    @ExceptionHandler(value = {Exception.class,GenericException.class})
+    @ExceptionHandler(value = {GenericException.class})
     protected ResponseEntity<Object> trataExcessaoAplicacao(final GenericException e, final WebRequest r) {
-        ExceptionDTO body = new ExceptionDTO(e.getValidacao(),HttpStatus.BAD_REQUEST.value(),null);
+        ExceptionDTO body = new ExceptionDTO(e,HttpStatus.BAD_REQUEST.value());
         return this.handleExceptionInternal(e, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, r);
     }
 
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    protected ResponseEntity<Object> trataContentViolationException(final ConstraintViolationException e, WebRequest r) {
+        ExceptionDTO body = new ExceptionDTO(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO,HttpStatus.BAD_REQUEST.value(),null);
+        e.getConstraintViolations().forEach(v -> {
+            
+            body.addDetalhe(ConstraintUtils.getConstraintMessage(v.getConstraintDescriptor().
+                                                                    getAnnotation()
+                                                                        .annotationType()
+                                                                            .getSimpleName(), 
+                                                                 v.getPropertyPath()
+                                                                     .toString(), 
+                                                                     v.getConstraintDescriptor().getAttributes()));
+        });
+        return this.handleExceptionInternal(e, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, r);
+    }
 }

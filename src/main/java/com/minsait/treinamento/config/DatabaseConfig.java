@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = {"com.minsait.treinamento.model.repositories"})
 public class DatabaseConfig {
 
     

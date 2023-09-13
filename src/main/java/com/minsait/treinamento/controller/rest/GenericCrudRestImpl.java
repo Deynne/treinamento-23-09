@@ -4,15 +4,19 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
 import com.minsait.treinamento.controller.interfaces.GenericCrudRest;
 import com.minsait.treinamento.model.service.GenericCrudServiceImpl;
 
+@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@Validated
 public abstract class GenericCrudRestImpl<S extends GenericCrudServiceImpl<?,I,P,U,B>,
                                           I extends Number,
                                           P,U,B> implements GenericCrudRest<I, P, U, B> {
@@ -32,13 +36,13 @@ public abstract class GenericCrudRestImpl<S extends GenericCrudServiceImpl<?,I,P
 
     @Override
     public ResponseEntity<B> excluir(
-            @PositiveOrZero(message = "O id não pode ser negativo") @NotNull(message = "O id não pode ser nulo.") I id) {
+            @Positive @NotNull I id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.service.excluir(id));
     }
 
     @Override
     public ResponseEntity<B> encontrarPorId(
-            @PositiveOrZero(message = "O id não pode ser negativo") @NotNull(message = "O id não pode ser nulo.") I id) {
+            @Positive @NotNull I id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.service.encontrarPorId(id));
     }
 
@@ -46,7 +50,4 @@ public abstract class GenericCrudRestImpl<S extends GenericCrudServiceImpl<?,I,P
     public ResponseEntity<List<B>> encontrarTodos() {
         return ResponseEntity.status(HttpStatus.OK).body(this.service.encontrarTodos());
     }
-    
-    
-
 }

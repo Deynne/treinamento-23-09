@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 
 import lombok.AllArgsConstructor;
@@ -51,10 +52,18 @@ public class ExceptionDTO implements Serializable{
         if(descricaoMsg != null) {
             this.detalhes.add(descricaoMsg);
         }
-        if(detalhes != null) {
-            this.detalhes.addAll(detalhes);
-        }
         this.tipo = mensagem.getSeveridade();
+        this.httpStatus = httpStatus;
+    }
+    
+    public ExceptionDTO(GenericException e, int httpStatus) {
+        this.codigo = e.getValidacao().getCodigoMsg();
+        this.detalhes = new ArrayList<>();
+        String descricaoMsg = e.getDescricaoMensagem();
+        if(descricaoMsg != null) {
+            this.detalhes.add(descricaoMsg);
+        }
+        this.tipo = e.getValidacao().getSeveridade();
         this.httpStatus = httpStatus;
     }
     
