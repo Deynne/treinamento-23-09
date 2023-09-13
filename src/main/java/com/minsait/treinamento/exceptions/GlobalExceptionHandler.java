@@ -210,7 +210,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {GenericException.class})
     protected ResponseEntity<Object> trataExcessaoAplicacao(final GenericException e, final WebRequest r) {
-        ExceptionDTO body = new ExceptionDTO(e.getValidacao(),HttpStatus.BAD_REQUEST.value(),null);
+        ExceptionDTO body = new ExceptionDTO(e,HttpStatus.BAD_REQUEST.value());
         return this.handleExceptionInternal(e, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, r);
     }
 

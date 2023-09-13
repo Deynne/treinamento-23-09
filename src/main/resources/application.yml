@@ -5,7 +5,7 @@ server:
         encoding: UTF-8
     tomcat:
         uri-encoding: UTF-8
-    port: 8080
+    port: ${PORT:8080}
     
 spring:
     profiles:
