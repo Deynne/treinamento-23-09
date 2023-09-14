@@ -2,6 +2,7 @@ package com.minsait.treinamento.model.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 
@@ -20,6 +21,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Entity
+@Table(name = "usuario")
 public class Usuario extends GenericEntity<Long>{
 
     @Column(nullable = false,length = 300)
