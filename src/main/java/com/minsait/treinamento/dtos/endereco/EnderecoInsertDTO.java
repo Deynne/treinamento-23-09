@@ -34,11 +34,9 @@ public class EnderecoInsertDTO {
     private Integer Numero;
 
     @NotBlank
-    @Pattern(regexp = "\\d{2}\\.?\\d{3}-?\\d{3}", message = "CEP deve estar no formato 00.000-000")
+    @Pattern(regexp = "\\d{2}\\.?\\d{3}-?\\d{3}", message = "00.000-000")
     private String CEP;
 
     @Size(max = 100)
     private String Referencia;
-    
-
 }

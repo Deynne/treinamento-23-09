@@ -17,5 +17,9 @@ public class UsuarioDTO {
     private String nome;
     
     private double rendaAnual;
+    
+    private String cpf;
+    
+    private String rg;
 
 }

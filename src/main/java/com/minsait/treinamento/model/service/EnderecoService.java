@@ -42,15 +42,17 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                                                         Endereco.class.getSimpleName()));
         
         if(StringUtils.hasText(dto.getCidade()))
-            endereco.setCidade(dto.getCidade());        
+            endereco.setCidade(dto.getCidade());
         if(StringUtils.hasText(dto.getBairro()))
-            endereco.setBairro(dto.getBairro());        
+            endereco.setBairro(dto.getBairro());
         if(StringUtils.hasText(dto.getRua()))
-            endereco.setRua(dto.getRua());        
+            endereco.setRua(dto.getRua());
         if(dto.getNumero() != null)
-            endereco.setNumero(dto.getNumero());        
+            endereco.setNumero(dto.getNumero());
         if(StringUtils.hasText(dto.getReferencia()))
             endereco.setReferencia(dto.getReferencia());
+        if(StringUtils.hasText(dto.getCEP()))
+            endereco.setCEP(dto.getCEP().replaceAll("[.-]*", ""));
         
         return toDTO(this.repositorio.save(endereco));
     }
@@ -93,7 +95,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                 .Bairro(dto.getBairro())
                 .Rua(dto.getRua())
                 .Numero(dto.getNumero())
-                .CEP(dto.getCEP())
+                .CEP(dto.getCEP().replaceAll("[.-]*", ""))
                 .Referencia(dto.getReferencia())
                 .build();
         

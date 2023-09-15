@@ -24,12 +24,15 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
     @Override
     public UsuarioDTO salvar(UsuarioInsertDTO dto) {
         Usuario u = Usuario.builder()
-                            .nome(dto.getNome())
-                            //Podemos realizar este processo assim, criando um novo objeto
-//                            .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
+                           .nome(dto.getNome())
+        //Podemos realizar este processo assim, criando um novo objeto
+                            //.infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
                             .build();
+        
         // Ou assim, utilizando-se do objeto padrão
         u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
+        u.getDocumentacao().setCpf(dto.getCpf().replaceAll("[.-]*", ""));
+        u.getDocumentacao().setRg(dto.getRg().replaceAll("[.-]*", ""));
         
         u = this.repository.save(u);
         
@@ -53,6 +56,14 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         
         if(dto.getRendaAnual() != null) {
             u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
+        }
+        
+        if(dto.getCpf() != null) {
+            u.getDocumentacao().setCpf(dto.getCpf().replaceAll("[.-]*", ""));
+        }
+        
+        if(dto.getRg() != null) {
+            u.getDocumentacao().setRg(dto.getRg().replaceAll("[.-]*", ""));
         }
         
         this.repository.save(u);
@@ -113,6 +124,8 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                             .id(u.getId())
                             .nome(u.getNome())
                             .rendaAnual(u.getInfoFinanceira().getRendaAnual())
+                            .cpf(u.getDocumentacao().getCpf())
+                            .rg(u.getDocumentacao().getRg())
                             .build();
     }
 
