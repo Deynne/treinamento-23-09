@@ -1,5 +1,6 @@
 package com.minsait.treinamento.exceptions;
 
+import javax.servlet.ServletRequest;
 import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.ConversionNotSupportedException;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -40,13 +42,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        final ExceptionDTO body = ExceptionDTO.builder()
-                                              .codigo(MensagemPersonalizada.ERRO_METODO_NAO_SUPORTADO.getCodigoMsg())
-                                              .httpStatus(status.value())
-                                              .tipo(MensagemPersonalizada.ERRO_METODO_NAO_SUPORTADO.getSeveridade())
-                                              .build();
-
-        body.addDetalhe(ex.getMessage());
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_METODO_NAO_SUPORTADO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value(), ex.getMethod());
 
         return this.handleExceptionInternal(ex, body, headers, status, request);
     }
@@ -54,64 +51,82 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        return super.handleHttpMediaTypeNotSupported(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_TIPO_MIDIA_NAO_SUPORTADO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value(), ex.getContentType().toString());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        return super.handleHttpMediaTypeNotAcceptable(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_TIPO_MIDIA_NAO_ACEITO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        
-        return super.handleMissingPathVariable(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_PARAMETRO_CAMINHO_AUSENTE;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value(), ex.getVariableName());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        return super.handleMissingServletRequestParameter(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_PARAMETRO_AUSENTE;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value(), ex.getParameterName());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        return super.handleServletRequestBindingException(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_INESPERADO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleConversionNotSupported(ConversionNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        return super.handleConversionNotSupported(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_INESPERADO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        
-        return super.handleTypeMismatch(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_INESPERADO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        return super.handleHttpMessageNotReadable(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_INESPERADO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        return super.handleHttpMessageNotWritable(ex, headers, status, request);
+        MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_INESPERADO;
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value());
+
+        return this.handleExceptionInternal(ex, body, headers, status, request);
     }
 
     @Override
@@ -121,7 +136,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         
         ex.getAllErrors().forEach(error -> body.addDetalhe(ConstraintUtils.getConstraintMessage(error)));
         return this.handleExceptionInternal(ex, body, headers, status, request);
-//        return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
     @Override
@@ -155,7 +169,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        this.printException(ex, request);
 
         if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
             request.setAttribute("javax.servlet.error.exception", ex, RequestAttributes.SCOPE_REQUEST);
@@ -166,48 +179,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         if (body instanceof ExceptionDTO) {
 
             exceptionVO = (ExceptionDTO) body;
-        } else if (ex instanceof MethodArgumentNotValidException) {
-            exceptionVO = new ExceptionDTO();
-            exceptionVO.setCodigo(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO.getCodigoMsg());
-            exceptionVO.addDetalhe(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO.getDescricaoMsg());
-            exceptionVO.setCodigo("erro");
-            exceptionVO.setHttpStatus(status.value());
-            MethodArgumentNotValidException mex = (MethodArgumentNotValidException) ex;
-
-            for (ObjectError err : mex.getBindingResult().getAllErrors()) {
-                FieldError ferr = (FieldError) err;
-                exceptionVO.addDetalhe(ConstraintUtils.getConstraintMessage(ferr.getCode(),ferr.getField()));
-            }
-
-            log.info("");
-
-        } else if (ex instanceof BindException) {
-            exceptionVO = new ExceptionDTO();
-            exceptionVO.setCodigo(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO.getCodigoMsg());
-            exceptionVO.addDetalhe(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO.getDescricaoMsg());
-            exceptionVO.setHttpStatus(status.value());
-            exceptionVO.setTipo("erro");
-            BindException bex = (BindException) ex;
-            for (ObjectError err : bex.getAllErrors()) {
-                FieldError ferr = (FieldError) err;
-                exceptionVO.addDetalhe(ConstraintUtils.getConstraintMessage(ferr.getCode(), ferr.getField()));
-            }
         } else {
-            exceptionVO = new ExceptionDTO();
-            exceptionVO.setCodigo(MensagemPersonalizada.ERRO_ACESSO_NEGADO.getCodigoMsg());
-            exceptionVO.addDetalhe(MensagemPersonalizada.ERRO_ACESSO_NEGADO.getDescricaoMsg());
-            exceptionVO.setHttpStatus(status.value());
-            exceptionVO.setTipo("erro");
+            exceptionVO = new ExceptionDTO(MensagemPersonalizada.ERRO_INESPERADO,status.value());
         }
 
         return new ResponseEntity<>(exceptionVO, headers, status);
     }
     
-    private void printException(Exception ex, WebRequest request) {
-        
-        
-    }
-
     @ExceptionHandler(value = {GenericException.class})
     protected ResponseEntity<Object> trataExcessaoAplicacao(final GenericException e, final WebRequest r) {
         ExceptionDTO body = new ExceptionDTO(e,HttpStatus.BAD_REQUEST.value());
