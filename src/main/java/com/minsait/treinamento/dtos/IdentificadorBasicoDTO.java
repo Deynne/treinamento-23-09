@@ -1,5 +1,4 @@
-package com.minsait.treinamento.dtos.usuario;
-
+package com.minsait.treinamento.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,12 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UsuarioDTO {
-    
-    private Long id;
-    
+public class IdentificadorBasicoDTO<I extends Number> {
+    private I id;
     private String nome;
-
-    private double rendaAnual;
-
 }

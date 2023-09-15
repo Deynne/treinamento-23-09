@@ -15,6 +15,10 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     ERRO_INTEGRIDADE_DO_BANCO_VIOLADA("integridade.banco.violada",null,TipoMensagem.ERRO),
     ERRO_ACESSO_NEGADO("acesso.negado",null,TipoMensagem.ERRO),
     ERRO_METODO_NAO_SUPORTADO("metodo.nao.suportado",null,TipoMensagem.ERRO),
+    ERRO_TIPO_MIDIA_NAO_SUPORTADO("tipo.midia.nao.suportado",null,TipoMensagem.ERRO),
+    ERRO_TIPO_MIDIA_NAO_ACEITO("tipo.midia.nao.aceito",null,TipoMensagem.ERRO),
+    ERRO_PARAMETRO_CAMINHO_AUSENTE("parametro.caminho.ausente",null,TipoMensagem.ERRO),
+    ERRO_PARAMETRO_AUSENTE("parametro.ausente",null,TipoMensagem.ERRO),
     
  // Campos Constraints
     ERRO_CONSTRAINT_CAMPO_OBRIGATORIO("constraint.campo.obrigatorio", null, TipoMensagem.ERRO),
