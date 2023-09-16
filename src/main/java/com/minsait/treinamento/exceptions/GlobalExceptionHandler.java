@@ -5,6 +5,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.minsait.treinamento.dtos.exceptions.ExceptionDTO;
+import com.minsait.treinamento.model.entities.Endereco;
 import com.minsait.treinamento.utils.ConstraintUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -205,6 +207,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                      .toString(), 
                                                                      v.getConstraintDescriptor().getAttributes()));
         });
+        return this.handleExceptionInternal(e, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, r);
+    }
+    
+    @ExceptionHandler(value = {DataIntegrityViolationException.class})
+    protected ResponseEntity<Object> trataDataIntegrityViolationException(final DataIntegrityViolationException e, WebRequest r) {
+        ExceptionDTO body = new ExceptionDTO(MensagemPersonalizada.ERRO_INTEGRIDADE_DO_BANCO_VIOLADA
+                                            ,HttpStatus.BAD_REQUEST.value()
+                                            ,Endereco.class.getSimpleName());
         return this.handleExceptionInternal(e, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, r);
     }
 }

@@ -24,4 +24,6 @@ public class EnderecoDTO {
     private String CEP;
     
     private String Referencia;
+    
+    private Long UsuarioId;
 }

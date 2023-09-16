@@ -1,5 +1,6 @@
 package com.minsait.treinamento.dtos.endereco;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
@@ -39,4 +40,6 @@ public class EnderecoUpdateDTO {
     @Length(max = 100)
     private String Referencia;
     
+    @Positive
+    private Long UsuarioId;
 }

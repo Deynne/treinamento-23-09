@@ -39,4 +39,8 @@ public class EnderecoInsertDTO {
 
     @Size(max = 100)
     private String Referencia;
+
+    @NotNull
+    @Positive
+    private Long UsuarioId;
 }
