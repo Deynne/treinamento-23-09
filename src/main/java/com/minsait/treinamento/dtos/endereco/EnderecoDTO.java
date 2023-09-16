@@ -26,4 +26,5 @@ public class EnderecoDTO {
 
     private String referencia;
 
+
 }
