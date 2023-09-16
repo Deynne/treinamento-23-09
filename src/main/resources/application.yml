@@ -20,11 +20,15 @@ spring:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     datasource:
         host: ${DATABASE_HOST:31.220.109.68}
+        //host: ${DATABASE_HOST:localhost}
         port: ${DATABASE_PORT:3306}
         database: ${DATABASE:treinamentoindra}
+        //database: ${DATABASE:treinamento}
         url: jdbc:mysql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}?useUnicode=true&autoReconnect=true
         username: ${DATABASE_USER:treinamentoindra}
         password: ${DATABASE_PASSWORD:treinamentoindra}
+        //username: ${DATABASE_USER:root}
+        //password: ${DATABASE_PASSWORD:}
         driverClassName: com.mysql.cj.jdbc.Driver
         hikari:
             auto-commit: true
