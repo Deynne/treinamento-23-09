@@ -21,4 +21,7 @@ public class UsuarioUpdateDTO {
     
     @Size(min = 3, max = 300)
     private String nome;
+    
+    @Positive
+    private Double rendaAnual;
 }

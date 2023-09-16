@@ -14,6 +14,7 @@ import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioUpdateDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
+import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
 import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.UsuarioRepository;
 
@@ -24,7 +25,11 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
     public UsuarioDTO salvar(UsuarioInsertDTO dto) {
         Usuario u = Usuario.builder()
                             .nome(dto.getNome())
+                            //Podemos realizar este processo assim, criando um novo objeto
+//                            .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
                             .build();
+        // Ou assim, utilizando-se do objeto padrão
+        u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
         
         u = this.repository.save(u);
         
@@ -44,6 +49,10 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         
         if(dto.getNome() != null) {
             u.setNome(dto.getNome());
+        }
+        
+        if(dto.getRendaAnual() != null) {
+            u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
         }
         
         this.repository.save(u);
@@ -76,13 +85,19 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
 
     @Override
     public UsuarioDTO encontrarPorId(@NotNull @Positive Long id) {
-        return toDTO(this.repository.findById(id)
+        return toDTO(encontrarEntidadePorId(id));
+    }
+
+
+
+    public Usuario encontrarEntidadePorId(@NotNull @Positive Long id) {
+        return this.repository.findById(id)
                     .orElseThrow(() -> {
                             return new GenericException(MensagemPersonalizada.
                                                             ALERTA_ELEMENTO_NAO_ENCONTRADO,
                                                         Usuario.class
                                                             .getSimpleName());
-                    }));
+                    });
     }
 
     @Override
@@ -97,6 +112,7 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         return UsuarioDTO.builder()
                             .id(u.getId())
                             .nome(u.getNome())
+                            .rendaAnual(u.getInfoFinanceira().getRendaAnual())
                             .build();
     }
 

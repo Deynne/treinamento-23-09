@@ -45,10 +45,10 @@ public class ExceptionDTO implements Serializable{
         }
     }
     
-    public ExceptionDTO(MensagemPersonalizada mensagem, int httpStatus, Collection<String> detalhes) {
+    public ExceptionDTO(MensagemPersonalizada mensagem, int httpStatus,String ... params) {
         this.codigo = mensagem.getCodigoMsg();
         this.detalhes = new ArrayList<>();
-        String descricaoMsg = mensagem.getDescricaoMsg();
+        String descricaoMsg = mensagem.getDescricaoMsg(params);
         if(descricaoMsg != null) {
             this.detalhes.add(descricaoMsg);
         }
