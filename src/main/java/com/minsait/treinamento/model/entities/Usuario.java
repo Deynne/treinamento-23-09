@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
-import com.minsait.treinamento.model.embedded.Documentação;
+import com.minsait.treinamento.model.embedded.Documentacao;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder.Default;
@@ -28,5 +28,5 @@ public class Usuario extends GenericEntity<Long> {
     
     @Embedded
     @Default
-    private Documentação documentação = Documentação.builder().cpf("").rg("").build();
+    private Documentacao documentacao = Documentacao.builder().cpf("").rg("").build();
 }

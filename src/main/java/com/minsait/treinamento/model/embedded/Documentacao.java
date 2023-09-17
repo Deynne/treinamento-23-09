@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Documentação {
+public class Documentacao {
 	
 	@Column(nullable = false,unique = true,length = 11)
 	private String cpf; //(11 caracteres)

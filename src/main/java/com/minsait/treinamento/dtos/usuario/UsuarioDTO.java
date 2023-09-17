@@ -1,6 +1,6 @@
 package com.minsait.treinamento.dtos.usuario;
 
-import com.minsait.treinamento.model.embedded.Documentação;
+import com.minsait.treinamento.model.embedded.Documentacao;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

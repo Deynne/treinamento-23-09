@@ -3,7 +3,7 @@ package com.minsait.treinamento.dtos.usuario;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.minsait.treinamento.model.embedded.Documentação;
+import com.minsait.treinamento.model.embedded.Documentacao;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

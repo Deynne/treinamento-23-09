@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @Entity
 @Table(name="endereco", uniqueConstraints = {@UniqueConstraint(columnNames = {"cep","numero"})})
-public class Endereço extends GenericEntity<Long>{
+public class Endereco extends GenericEntity<Long>{
 
 	@Column(nullable = false,length = 50)
 	private String cidade; //(50 Caracteres);

@@ -15,15 +15,15 @@ import com.minsait.treinamento.dtos.endereço.EndereçoInsertDTO;
 import com.minsait.treinamento.dtos.endereço.EndereçoUpdateDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
-import com.minsait.treinamento.model.entities.Endereço;
+import com.minsait.treinamento.model.entities.Endereco;
 import com.minsait.treinamento.model.repositories.EndereçoRepository;
 
 @Service
-public class EndereçoService extends GenericCrudServiceImpl<EndereçoRepository, Long, EndereçoInsertDTO, EndereçoUpdateDTO, EndereçoDTO> {
+public class EnderecoService extends GenericCrudServiceImpl<EndereçoRepository, Long, EndereçoInsertDTO, EndereçoUpdateDTO, EndereçoDTO> {
 
 	@Override
 	public EndereçoDTO salvar(@Valid EndereçoInsertDTO dto) {
-		Endereço e = Endereço.builder()
+		Endereco e = Endereco.builder()
 				             .cidade(dto.getCidade())
 				             .bairro(dto.getBairro())
 				             .rua(dto.getRua())
@@ -40,10 +40,10 @@ public class EndereçoService extends GenericCrudServiceImpl<EndereçoRepository
 	
 	@Override
 	public EndereçoDTO atualizar(@Valid EndereçoUpdateDTO dto) {
-		Endereço e = this.repository.findById(dto.getId())
+		Endereco e = this.repository.findById(dto.getId())
 				.orElseThrow (() ->
 		           new GenericException(MensagemPersonalizada.
-		        		   ALERTA_ELEMENTO_NAO_ENCONTRADO, Endereço.class.getSimpleName()));
+		        		   ALERTA_ELEMENTO_NAO_ENCONTRADO, Endereco.class.getSimpleName()));
 		
 		if(dto.getCidade() != null) {
 			e.setCidade(dto.getCidade());
@@ -77,12 +77,12 @@ public class EndereçoService extends GenericCrudServiceImpl<EndereçoRepository
 	
 	@Override
 	public EndereçoDTO excluir(@NotNull @Positive Long id) {
-		Endereço e = this.repository.findById(id)
+		Endereco e = this.repository.findById(id)
 				.orElseThrow(new Supplier<GenericException>() {
 					@Override
 					public GenericException get() {
 							return new GenericException(MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO,
-									Endereço.class
+									Endereco.class
 									.getSimpleName());
 						}
 				});
@@ -97,7 +97,7 @@ public class EndereçoService extends GenericCrudServiceImpl<EndereçoRepository
 				.orElseThrow(()-> {
 					return new GenericException(MensagemPersonalizada.
 							ALERTA_ELEMENTO_NAO_ENCONTRADO,
-							Endereço.class
+							Endereco.class
 							.getSimpleName());
 				}));
 	}
@@ -107,12 +107,12 @@ public class EndereçoService extends GenericCrudServiceImpl<EndereçoRepository
 	public List<EndereçoDTO> encontrarTodos() {
 		return this.repository.findAll()
 				              .stream()
-				              .map(EndereçoService::toDTO)
+				              .map(EnderecoService::toDTO)
 				              .collect(Collectors.toList());
 	}
 	
 	
-	public static EndereçoDTO toDTO(@NotNull Endereço e) {
+	public static EndereçoDTO toDTO(@NotNull Endereco e) {
 		return EndereçoDTO.builder()
 						  .cidade(e.getCidade())
 			              .bairro(e.getBairro())
