@@ -4,6 +4,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
+import com.minsait.treinamento.model.embedded.Documentação;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +23,7 @@ public class UsuarioUpdateDTO {
     
     @Size(min = 3, max = 300)
     private String nome;
+    
+//    private Documentação documentacao;
+
 }
