@@ -16,6 +16,12 @@ public class UsuarioRest extends GenericCrudRestImpl<UsuarioService, Long, Usuar
 
     @GetMapping("usuario-{id}")
     public ResponseEntity<UsuarioDTO> acharPorIdDiferente(@PathVariable Long id) {
+
         return ResponseEntity.<UsuarioDTO>ok(this.service.encontrarPorId(id));
+    }
+
+    @GetMapping("/t")
+    public void list() {
+        System.out.println(this.service.encontrarTodos());
     }
 }

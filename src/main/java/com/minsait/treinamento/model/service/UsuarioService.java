@@ -1,16 +1,21 @@
 package com.minsait.treinamento.model.service;
 
+import com.minsait.treinamento.dtos.endereco.EnderecoDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioUpdateDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
+import com.minsait.treinamento.model.embedded.Documentacao;
+import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
 import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -20,14 +25,15 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
 
 
     @Override
-    public UsuarioDTO salvar(UsuarioInsertDTO dto) {
+    public UsuarioDTO salvar(@Valid UsuarioInsertDTO dto) {
         Usuario u = Usuario.builder()
                 .nome(dto.getNome())
-                //Podemos realizar este processo assim, criando um novo objeto
-//                            .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
+                .documentacao(Documentacao.builder().cpf(dto.getCpf()).rg(dto.getRg()).build())
+                .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
+                .enderecos(new ArrayList<>())
                 .build();
-        // Ou assim, utilizando-se do objeto padrão
-        u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
+
+        //u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
 
         u = this.repository.save(u);
 
@@ -108,7 +114,20 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         return UsuarioDTO.builder()
                 .id(u.getId())
                 .nome(u.getNome())
+                .cpf(u.getDocumentacao().getCpf())
+                .rg(u.getDocumentacao().getRg())
                 .rendaAnual(u.getInfoFinanceira().getRendaAnual())
+                .enderecos(usuarioDTOList(u))
                 .build();
+    }
+
+    private static List<EnderecoDTO> usuarioDTOList(Usuario u) {
+        if (!u.getEnderecos().isEmpty()) {
+            return u.getEnderecos()
+                    .stream()
+                    .map(e -> new EnderecoDTO(e.getId(), e.getCidade(), e.getBairro(), e.getRua(), e.getNumero(), e.getCep(), e.getReferencia(), u.getId()))
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 }

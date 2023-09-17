@@ -3,10 +3,14 @@ package com.minsait.treinamento.model.service;
 import com.minsait.treinamento.dtos.endereco.EnderecoDTO;
 import com.minsait.treinamento.dtos.endereco.EnderecoInsertDTO;
 import com.minsait.treinamento.dtos.endereco.EnderecoUpdateDTO;
+import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Endereco;
+import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.EnderecoRepository;
+import com.minsait.treinamento.model.repositories.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -17,6 +21,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, Long, EnderecoInsertDTO, EnderecoUpdateDTO, EnderecoDTO> {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
     @Override
     public EnderecoDTO salvar(@Valid EnderecoInsertDTO dto) {
         boolean enderecoExiste = this.repository.existsEnderecoByCepAndNumero(dto.getCep(), dto.getNumero());
@@ -74,10 +81,14 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                 .cidade(e.getCidade())
                 .numero(e.getNumero())
                 .referencia(e.getReferencia())
+                .usuario_id(e.getUsuario().getId())
                 .build();
     }
 
     private Endereco toEntity(EnderecoInsertDTO dto) {
+        Usuario u = usuarioRepository.findById(dto.getUsuario_id())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO, Usuario.class.getSimpleName()));
+
         return Endereco.builder()
                 .cidade(dto.getCidade())
                 .bairro(dto.getBairro())
@@ -85,6 +96,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                 .numero(dto.getNumero())
                 .cep(dto.getCep())
                 .referencia(dto.getReferencia())
+                .usuario(u)
                 .build();
     }
 }

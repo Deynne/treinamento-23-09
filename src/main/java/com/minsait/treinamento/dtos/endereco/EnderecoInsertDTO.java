@@ -3,6 +3,7 @@ package com.minsait.treinamento.dtos.endereco;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 @Data
@@ -30,4 +31,7 @@ public class EnderecoInsertDTO {
 
     @Size(max = 100)
     private String referencia;
+
+    @Positive
+    private Long usuario_id;
 }
