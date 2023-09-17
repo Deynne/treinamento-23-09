@@ -16,6 +16,8 @@ public class UsuarioDTO {
     private Long id;
     
     private String nome;
+    
+    private double rendaAnual;
 
 //    private Documentação documentacao;
 

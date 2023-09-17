@@ -1,6 +1,8 @@
 package com.minsait.treinamento.dtos.usuario;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 import com.minsait.treinamento.model.embedded.Documentacao;
@@ -20,6 +22,7 @@ public class UsuarioInsertDTO {
     @Size(min = 3, max = 300)
     private String nome;
     
-//    private Documentação documentacao;
-    
+    @Positive
+    @NotNull
+    private Double rendaAnual;
 }
