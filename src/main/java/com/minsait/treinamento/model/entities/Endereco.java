@@ -37,11 +37,9 @@ public class Endereco extends  GenericEntity<Long> {
     private String cep;
     @Column(name = "referencia", length = 100,  nullable = true)
     private String referencia;
-   
-    
     
     @JoinColumn(nullable = false, name = "id_usuario")
     @ManyToOne(fetch = FetchType.LAZY)
     private Usuario usuario;
-
+   
 }
