@@ -8,6 +8,7 @@ import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.embedded.Documentacao;
 import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
+import com.minsait.treinamento.model.entities.Endereco;
 import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,18 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
 
     @Override
     public UsuarioDTO salvar(@Valid UsuarioInsertDTO dto) {
+        boolean existeCpfOuRgCadastrado = repository.existsUsuarioByDocumentacao_CpfOrDocumentacao_rg(dto.getCpf(), dto.getRg());
+
+        if (existeCpfOuRgCadastrado) {
+            throw new GenericException(MensagemPersonalizada.ERRO_INTEGRIDADE_DO_BANCO_VIOLADA, Endereco.class.getSimpleName());
+        }
+
         Usuario u = Usuario.builder()
                 .nome(dto.getNome())
                 .documentacao(Documentacao.builder().cpf(dto.getCpf()).rg(dto.getRg()).build())
                 .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
                 .enderecos(new ArrayList<>())
                 .build();
-
-        //u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
 
         u = this.repository.save(u);
 
