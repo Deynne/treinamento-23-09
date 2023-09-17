@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
+import com.minsait.treinamento.model.embedded.Documentacao;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder.Default;
@@ -38,4 +39,5 @@ public class Usuario extends GenericEntity<Long>{
     @Embedded
     @Default
     private InfoFinanceiraUsuario infoFinanceira = InfoFinanceiraUsuario.builder().rendaAnual(0.0).build();
+    private Documentacao documentacao = Documentacao.builder().cpf("").rg("").build();
 }

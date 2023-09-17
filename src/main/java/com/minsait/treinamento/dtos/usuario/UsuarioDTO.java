@@ -1,5 +1,6 @@
 package com.minsait.treinamento.dtos.usuario;
 
+import com.minsait.treinamento.model.embedded.Documentacao;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +18,7 @@ public class UsuarioDTO {
     private String nome;
     
     private double rendaAnual;
+
+//    private Documentação documentacao;
 
 }

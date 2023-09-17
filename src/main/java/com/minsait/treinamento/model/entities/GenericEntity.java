@@ -23,4 +23,5 @@ public class GenericEntity<T extends Number> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected T id;
+
 }
