@@ -1,17 +1,20 @@
 package com.minsait.treinamento.model.service;
 
-import com.minsait.treinamento.dtos.conta.ContaDTO;
-import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
-import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
+import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
+import com.minsait.treinamento.dtos.conta.*;
+import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
+import com.minsait.treinamento.model.embedded.Documentacao;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.ContaRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;
@@ -24,6 +27,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
     private UsuarioService usuarioService;
 
     @Override
+    @Transactional
     public ContaDTO salvar(@Valid ContaInsertDTO dto) {
         Usuario u = this.usuarioService.encontrarEntidadePorId(dto.getIdUsuario());
 
@@ -36,22 +40,24 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
         c = this.repository.save(c);
 
-        return ContaService.toDTO(c);
+        return toDTO(c);
     }
 
 
-    @Transactional
-    public static ContaDTO toDTO(Conta c) {
+    public ContaDTO toDTO(Conta c) {
+
+        UsuarioDTO usuarioDTO = this.usuarioService.encontrarPorId(c.getUsuario().getId());
+
         return ContaDTO.builder()
                 .idUsuario(c.getUsuario().getId())
                 .id(c.getId())
                 .numAgencia(c.getNumAgencia())
                 .numConta(c.getNumConta())
-//                        .usuario(IdentificadorBasicoDTO.
-//                                    <Long>builder()
-//                                    .id(c.getUsuario().getId())
-//                                    .nome(c.getUsuario().getNome())
-//                                    .build())
+                .usuario(IdentificadorBasicoDTO.
+                        <Long>builder()
+                        .id(usuarioDTO.getId())
+                        .nome(usuarioDTO.getNome())
+                        .build())
                 .saldo(c.getSaldo())
                 .build();
     }
@@ -85,7 +91,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         }
 
         this.repository.save(c);
-        return ContaService.toDTO(c);
+        return toDTO(c);
     }
 
     @Override
@@ -111,7 +117,64 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
     @Override
     public List<ContaDTO> encontrarTodos() {
-        return this.repository.findAll().stream().map(ContaService::toDTO).collect(Collectors.toList());
+        return this.repository.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ContaDTO depositar(@Valid ContaDepositarSacarDTO contaDepositar) {
+        Conta conta = this.repository.findByNumContaAndNumAgencia(contaDepositar.getNumConta(), contaDepositar.getNumAgencia());
+        double saldo = conta.getSaldo() + contaDepositar.getSaldo();
+        conta.setSaldo(saldo);
+        this.repository.save(conta);
+        return toDTO(conta);
+    }
+
+    public ContaDTO sacar(@Valid ContaDepositarSacarDTO contaSacar) {
+        Conta conta = this.repository.findByNumContaAndNumAgencia(contaSacar.getNumConta(), contaSacar.getNumAgencia());
+        double saldo = conta.getSaldo() - contaSacar.getSaldo();
+        if (saldo < 0) {
+            throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE, Conta.class.getSimpleName());
+        }
+        conta.setSaldo(saldo);
+        this.repository.save(conta);
+        return toDTO(conta);
+    }
+
+    @Transactional
+    public ContaDTO transferencia(@Valid ContaTransferenciaDTO transferencia) {
+
+        Conta contaOrigem = this.repository.findByNumContaAndNumAgencia(transferencia.getContaOrigem(), transferencia.getAgenciaOrigem());
+        Conta contaDestino = this.repository.findByNumContaAndNumAgencia(transferencia.getContaDestino(), transferencia.getAgenciaDestino());
+        String cpfDestino = this.usuarioService.encontrarPorId(contaDestino.getUsuario().getId()).getCpf();
+
+        if (!contaOrigem.getUsuario().getId().equals(contaDestino.getUsuario().getId())) {
+            if (transferencia.getCpf() == null) {
+                throw new GenericException(MensagemPersonalizada.ALERTA_CPF_INVALIDO, Documentacao.class.getSimpleName());
+            }
+        }
+        if (transferencia.getCpf() != null) {
+            if (!transferencia.getCpf().equals(cpfDestino)) {
+                throw new GenericException(MensagemPersonalizada.ALERTA_CPF_INVALIDO, Documentacao.class.getSimpleName());
+            }
+        }
+        if ((contaOrigem.getSaldo() - transferencia.getSaldo()) < 0) {
+            throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE, Conta.class.getSimpleName());
+        }
+        if (contaOrigem.getNumAgencia().equals(contaDestino.getNumAgencia())
+                && contaOrigem.getNumConta().equals(contaDestino.getNumConta())) {
+            throw new GenericException(MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO, Conta.class.getSimpleName());
+        }
+
+        double saldoOrigem = contaOrigem.getSaldo() - transferencia.getSaldo();
+        double saldoDestino = contaDestino.getSaldo() + transferencia.getSaldo();
+        contaOrigem.setSaldo(saldoOrigem);
+        contaDestino.setSaldo(saldoDestino);
+
+        this.repository.save(contaOrigem);
+        this.repository.save(contaDestino);
+
+        return toDTO(contaOrigem);
     }
 
 
@@ -120,7 +183,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
         return this.repository.findAllByUsuarioOrderBySaldoDesc(u)
                 .stream()
-                .map(ContaService::toDTO)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -129,7 +192,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
         return this.repository.acharContasComDinheiroOrdemParametro(u, valorMinimo)
                 .stream()
-                .map(ContaService::toDTO)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -139,7 +202,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
         return this.repository.acharContasComDinheiroNomeParametro(u, valorMinimo)
                 .stream()
-                .map(ContaService::toDTO)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -148,7 +211,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
         return this.repository.acharContasComDinheiroQueryNativa(u, valorMinimo)
                 .stream()
-                .map(ContaService::toDTO)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -156,14 +219,14 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
     public List<ContaDTO> achaContasPorNomeUsuario(@NotBlank @Size(min = 3, max = 300) String nome) {
         return this.repository.achaContasPorNomeUsuario(nome)
                 .stream()
-                .map(ContaService::toDTO)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     public List<ContaDTO> achaContasPorNomeUsuarioQueryNativa(@NotBlank @Size(min = 3, max = 300) String nome) {
         return this.repository.achaContasPorNomeUsuarioQueryNativa(nome)
                 .stream()
-                .map(ContaService::toDTO)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 }

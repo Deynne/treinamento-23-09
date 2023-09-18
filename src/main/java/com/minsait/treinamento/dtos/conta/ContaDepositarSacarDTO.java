@@ -1,20 +1,24 @@
 package com.minsait.treinamento.dtos.conta;
 
-import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ContaDTO {
-    private Long id;
+public class ContaDepositarSacarDTO {
+
+    @Size(min = 5, max = 5)
+    @Digits(fraction = 0, integer = 5)
     private String numAgencia;
+
+    @Size(min = 7, max = 7)
+    @Digits(fraction = 0, integer = 7)
     private String numConta;
+
+    @Positive
     private double saldo;
-    private Long idUsuario;
-    private IdentificadorBasicoDTO<Long> usuario;
 }

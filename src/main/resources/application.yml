@@ -18,6 +18,7 @@ spring:
             ddl-auto: update
             naming:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
     datasource:
         #host: ${DATABASE_HOST:31.220.109.68}
         host: ${DATABASE_HOST:localhost}

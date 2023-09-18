@@ -8,6 +8,7 @@ import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.ArrayList;

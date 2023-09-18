@@ -1,5 +1,6 @@
 package com.minsait.treinamento.model.repositories;
 
+import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Usuario;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,6 @@ public interface ContaRepository extends GenericCrudRepository<Conta, Long> {
             + "where u.nome = :nome order by c.saldo desc",
             nativeQuery = true)
     List<Conta> achaContasPorNomeUsuarioQueryNativa(String nome);
+
+    Conta findByNumContaAndNumAgencia(String numConta, String numAgencia);
 }
