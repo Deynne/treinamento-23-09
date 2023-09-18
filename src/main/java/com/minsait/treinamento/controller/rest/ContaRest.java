@@ -2,19 +2,26 @@ package com.minsait.treinamento.controller.rest;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.minsait.treinamento.dtos.Transacao.ContaDepositoDTO;
+import com.minsait.treinamento.dtos.Transacao.ContaSaqueDTO;
+import com.minsait.treinamento.dtos.Transacao.ContaTransferenciaDTO;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
@@ -60,4 +67,18 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
         return ResponseEntity.ok(this.service.achaContasPorNomeUsuarioQueryNativa(nome));
     }
     
+    @PutMapping(path = "deposito", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ContaDTO> deposita(@Valid @RequestBody ContaDepositoDTO dto) {
+        return ResponseEntity.ok(this.service.deposito(dto));
+    }
+    
+    @PutMapping(path = "saque", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ContaDTO> deposita(@Valid @RequestBody ContaSaqueDTO dto) {
+        return ResponseEntity.ok(this.service.saque(dto));
+    }
+    
+    @PutMapping(path = "transferencia", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ContaDTO> deposita(@Valid @RequestBody ContaTransferenciaDTO dto) {
+        return ResponseEntity.ok(this.service.transferencia(dto));
+    }
 }

@@ -43,6 +43,11 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     ERRO_CONSTRAINT_CAMPO_DATA_PASSADA_OU_PRESENTE("constraint.campo.passada.ou.presente", null, TipoMensagem.ERRO),
     ERRO_CONSTRAINT_CAMPO_PADRAO_REGEX("constraint.campo.padrao.regex", null, TipoMensagem.ERRO),
     
+    ALERTA_SALDO_INSUFICIENTE("alerta.saldo.insuficiente", null, TipoMensagem.ALERTA),
+    ERRO_CONTA_INVALIDA("erro.conta.invalida", null, TipoMensagem.ERRO),
+    ERRO_CONTA_ORIGEM_INVALIDA("erro.conta.origem.invalida", null, TipoMensagem.ERRO),
+    ERRO_CONTA_DESTINO_INVALIDA("erro.conta.destino.invalida", null, TipoMensagem.ERRO),
+    
     ALERTA_ELEMENTO_NAO_ENCONTRADO("elemento.nao.encontrado", null, TipoMensagem.ALERTA);
     
     private String codigoMsg;
