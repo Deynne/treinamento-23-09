@@ -19,10 +19,12 @@ public class EndereçoDTO {
 	
 	private String rua; //(500 Caracteres)
 	
-	private int numero;
+	private String numero;
 	
-	private int cep;
+	private String cep;
 	
 	private String referencia; //(100 Caracteres)
+	
+	private Long usuarioID;
 
 }

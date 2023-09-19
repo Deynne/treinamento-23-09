@@ -34,11 +34,11 @@ public class Endereco extends GenericEntity<Long>{
 	@Column(nullable = false,length = 500)
 	private String rua; //(500 Caracteres)
 	
-	@Column(nullable = false,length = 300)
-	private int numero;
+	@Column(nullable = false,length = 6)
+	private String numero;
 	
-	@Column(nullable = false,length = 300)
-	private int cep;
+	@Column(nullable = false,length = 9)
+	private String cep;
 	
 	@Column(nullable = true,length = 100)
 	private String referencia; //(100 Caracteres)

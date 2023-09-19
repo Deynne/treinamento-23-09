@@ -1,0 +1,84 @@
+package com.minsait.treinamento.controller.rest;
+
+import java.util.List;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.minsait.treinamento.dtos.conta.ContaDTO;
+import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
+import com.minsait.treinamento.dtos.conta.ContaTransactionsDTO;
+import com.minsait.treinamento.dtos.conta.ContaTransferDTO;
+import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
+import com.minsait.treinamento.model.service.ContaService;
+
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
+@RestController
+@RequestMapping("conta")
+public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInsertDTO, ContaUpdateDTO, ContaDTO> {
+	
+	@PutMapping("/depositar")
+	public ResponseEntity<ContaDTO> depositar(@RequestBody ContaTransactionsDTO dto) {
+		return ResponseEntity.ok(this.service.depositar(dto));
+	}
+	
+	@PutMapping("/sacar")
+	public ResponseEntity<ContaDTO> sacar(@RequestBody ContaTransactionsDTO dto) {
+		return ResponseEntity.ok(this.service.sacar(dto));
+	}
+	
+	
+	@PutMapping("/transferir")
+	public ResponseEntity<ContaDTO> transferir(@RequestBody ContaTransferDTO dto) {
+		return ResponseEntity.ok(this.service.transferir(dto));
+	}
+	
+    @GetMapping("contas-por-usuario/{id}")
+    public ResponseEntity<List<ContaDTO>> acharTodasPorUsuario(@NotNull @Positive @PathVariable Long id) {
+        return ResponseEntity.ok(this.service.acharTodasPorUsuario(id));
+        
+    }
+    
+    @GetMapping("contas-com-dinheiro-ordem-parametro")
+    public ResponseEntity<List<ContaDTO>> acharTodasPorUsuarioOrdemParametro(@NotNull @Positive @RequestParam Long id, 
+                                                               @RequestParam @NotNull @PositiveOrZero Double valorMinimo) {
+        return ResponseEntity.ok(this.service.acharTodasPorUsuarioEValorMinimoOrdemParametro(id,valorMinimo));
+        
+    }
+    
+    @GetMapping("contas-com-dinheiro-nome-parametro")
+    public ResponseEntity<List<ContaDTO>> acharTodasPorUsuarioNomeParametro(@NotNull @Positive @RequestParam Long id, 
+                                                               @RequestParam @NotNull @PositiveOrZero Double valorMinimo) {
+        return ResponseEntity.ok(this.service.acharTodasPorUsuarioEValorNomeParametro(id,valorMinimo));
+        
+    }
+    
+    @GetMapping("contas-com-dinheiro-query-nativa")
+    public ResponseEntity<List<ContaDTO>> acharTodasPorUsuarioQueryNativa(@NotNull @Positive @RequestParam Long id, 
+                                                               @RequestParam @NotNull @PositiveOrZero Double valorMinimo) {
+        return ResponseEntity.ok(this.service.acharTodasPorUsuarioEValorMinimoQueryNativa(id,valorMinimo));
+    }
+    
+    @GetMapping("contas-por-nome")
+    public ResponseEntity<List<ContaDTO>> achaContasPorNomeUsuario(@RequestParam @NotBlank @Size(min=3, max=300) String nome) {
+        return ResponseEntity.ok(this.service.achaContasPorNomeUsuario(nome));
+    }
+    
+    @GetMapping("contas-por-nome-query-nativa")
+    public ResponseEntity<List<ContaDTO>> achaContasPorNomeUsuarioQueryNativa(@RequestParam @NotBlank @Size(min=3, max=300) String nome) {
+        return ResponseEntity.ok(this.service.achaContasPorNomeUsuarioQueryNativa(nome));
+    }
+    
+}

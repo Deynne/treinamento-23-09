@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.minsait.treinamento.dtos.endereço.EndereçoDTO;
@@ -16,13 +17,18 @@ import com.minsait.treinamento.dtos.endereço.EndereçoUpdateDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Endereco;
+import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.EndereçoRepository;
 
 @Service
 public class EnderecoService extends GenericCrudServiceImpl<EndereçoRepository, Long, EndereçoInsertDTO, EndereçoUpdateDTO, EndereçoDTO> {
-
+	
+	@Autowired
+	private UsuarioService usuarioService; 
+	
 	@Override
 	public EndereçoDTO salvar(@Valid EndereçoInsertDTO dto) {
+		Usuario u = this.usuarioService.encontrarEntidadePorId(dto.getUsuarioID());
 		Endereco e = Endereco.builder()
 				             .cidade(dto.getCidade())
 				             .bairro(dto.getBairro())
@@ -30,6 +36,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EndereçoRepository,
 				             .numero(dto.getNumero())
 				             .cep(dto.getCep())
 				             .referencia(dto.getReferencia())
+				             .usuario(u)
 				             .build();
 		
 				   e = this.repository.save(e);
@@ -57,16 +64,21 @@ public class EnderecoService extends GenericCrudServiceImpl<EndereçoRepository,
 			e.setRua(dto.getRua());
 		}
 		
-		if(dto.getNumero() != 0) {
+		if(dto.getNumero() != null) {
 			e.setNumero(dto.getNumero());
 		}
 		
-		if(dto.getCep() != 0) {
+		if(dto.getCep() != null) {
 			e.setCep(dto.getCep());
 		}
 		
 		if(dto.getReferencia() != null) {
 			e.setReferencia(dto.getReferencia());
+		}
+		
+		if(dto.getUsuarioId()!= null) {
+			Usuario u = this.usuarioService.encontrarEntidadePorId(dto.getUsuarioId());
+			e.setUsuario(u);
 		}
 
 		
@@ -120,7 +132,8 @@ public class EnderecoService extends GenericCrudServiceImpl<EndereçoRepository,
 			              .numero(e.getNumero())
 			              .cep(e.getCep())
 			              .referencia(e.getReferencia())
-			              .build();				
+			              .usuarioID(e.getUsuario().getId())
+			              .build();
 	}
 
 }

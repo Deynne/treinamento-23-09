@@ -20,25 +20,25 @@ public class EndereçoUpdateDTO {
     @Positive
     private Long id;
     
-	@NotBlank
     @Size(min = 3, max = 50)
 	private String cidade; //(50 Caracteres);
 	
-	@NotBlank
     @Size(min = 3, max = 50)
 	private String bairro; //(50 Caracteres)
 	
-	@NotBlank
-    @Size(min = 3, max = 500)
+    @Size(min = 3, max = 50)
 	private String rua; //(500 Caracteres)
 	
-	@NotBlank
-	private int numero;
+    @Positive
+	private String numero;
 	
 	@NotBlank
-	private int cep;
+	private String cep;
 	
     @Size(min = 3, max = 100)
 	private String referencia; //(100 Caracteres)
+    
+    @Positive
+    private Long usuarioId;
 
 }
