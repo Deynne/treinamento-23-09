@@ -1,9 +1,23 @@
 package com.minsait.treinamento.model.entities;
 
+<<<<<<< HEAD
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
+=======
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
+>>>>>>> 38f7860df3f3b7c2323655d889b80db5d908d5ce
 import com.minsait.treinamento.model.embedded.Documentacao;
 
 import javax.persistence.Table;
@@ -33,7 +47,12 @@ public class Usuario extends GenericEntity<Long>{
     
     @Embedded
     @Default
+<<<<<<< HEAD
     private Documentacao documentacao = Documentacao.builder().cpf("").rg("").build();
     
     private InfoFinanceiraUsuario infoFinanceira = InfoFinanceiraUsuario.builder().rendaAnual(0.0).build();
+=======
+    private InfoFinanceiraUsuario infoFinanceira = InfoFinanceiraUsuario.builder().rendaAnual(0.0).build();
+    private Documentacao documentacao = Documentacao.builder().cpf("").rg("").build();
+>>>>>>> 38f7860df3f3b7c2323655d889b80db5d908d5ce
 }

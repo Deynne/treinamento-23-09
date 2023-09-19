@@ -22,6 +22,7 @@ public class UsuarioInsertDTO {
     @Size(min = 3, max = 300)
     private String nome;
     
+<<<<<<< HEAD
     @NotBlank
     @Size(min = 9, max = 13)
     private String cpf;
@@ -30,6 +31,8 @@ public class UsuarioInsertDTO {
     @Size(min = 9, max = 13)
     private String rg;
 
+=======
+>>>>>>> 38f7860df3f3b7c2323655d889b80db5d908d5ce
     @Positive
     @NotNull
     private Double rendaAnual;
