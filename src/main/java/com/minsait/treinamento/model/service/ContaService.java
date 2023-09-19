@@ -23,6 +23,9 @@ import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.ContaRepository;
+import com.minsait.treinamento.dtos.transacao.ContaDepositoDTO;
+import com.minsait.treinamento.dtos.transacao.ContaSaqueDTO;
+import com.minsait.treinamento.dtos.transacao.ContaTransferenciaDTO;
 
 @Service
 public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, ContaInsertDTO, ContaUpdateDTO, ContaDTO> {
@@ -172,6 +175,69 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                 .stream()
                 .map(ContaService::toDTO)
                 .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public ContaDTO deposito(ContaDepositoDTO dto) {
+        var c = this.repository.achaPorAgenciaConta(dto.getAgencia(), dto.getConta());
+        
+        if(c.isEmpty())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
+                Conta.class.getSimpleName());
+        
+        c.get().setSaldo(
+                c.get().getSaldo() + dto.getValor()
+            );
+        this.repository.save(c.get());
+
+        return toDTO(c.get());
+    }
+    
+    
+    @Transactional
+    public ContaDTO saque(ContaSaqueDTO dto) {
+        var c = this.repository.achaPorAgenciaConta(dto.getAgencia(), dto.getConta());
+        
+        if(c.isEmpty())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
+                Conta.class.getSimpleName());
+        
+        if(c.get().getSaldo() < dto.getValor())
+            throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE,
+                    Conta.class.getSimpleName());
+        
+        c.get().setSaldo(
+                c.get().getSaldo() - dto.getValor()
+            );
+        this.repository.save(c.get());
+        
+        return toDTO(c.get());
+    }
+
+
+    @Transactional
+    public ContaDTO transferencia(@Valid ContaTransferenciaDTO dto) {
+        var o = this.repository.achaPorAgenciaConta(dto.getAgenciaOrigem(), dto.getContaOrigem());
+        if(o.isEmpty())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_ORIGEM_INVALIDA,
+                Conta.class.getSimpleName());
+        
+        var d = this.repository.achaPorAgenciaConta(dto.getAgenciaDestino(), dto.getContaDestino());
+        if(d.isEmpty() || !dto.getCpf().equals(d.get().getUsuario().getDocumentacao().getCpf()))
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_DESTINO_INVALIDA,
+                    Conta.class.getSimpleName());
+        
+        if(o.get().getSaldo() < dto.getValor())
+            throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE,
+                    Conta.class.getSimpleName());
+        
+        o.get().setSaldo(o.get().getSaldo() - dto.getValor());
+        this.repository.save(o.get());
+        
+        d.get().setSaldo(d.get().getSaldo() + dto.getValor());
+        this.repository.save(d.get());
+        
+        return toDTO(o.get());
     }
 
 }

@@ -8,9 +8,12 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +22,11 @@ import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
 import com.minsait.treinamento.model.service.ContaService;
+
+import javax.validation.Valid;
+import com.minsait.treinamento.dtos.transacao.ContaDepositoDTO;
+import com.minsait.treinamento.dtos.transacao.ContaSaqueDTO;
+import com.minsait.treinamento.dtos.transacao.ContaTransferenciaDTO;
 
 @RestController
 @RequestMapping("conta")
@@ -58,6 +66,21 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     @GetMapping("contas-por-nome-query-nativa")
     public ResponseEntity<List<ContaDTO>> achaContasPorNomeUsuarioQueryNativa(@RequestParam @NotBlank @Size(min=3, max=300) String nome) {
         return ResponseEntity.ok(this.service.achaContasPorNomeUsuarioQueryNativa(nome));
+    }
+    
+    @PutMapping(path = "deposito", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ContaDTO> deposito(@Valid @RequestBody ContaDepositoDTO dto) {
+        return ResponseEntity.ok(this.service.deposito(dto));
+    }
+    
+    @PutMapping(path = "saque", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ContaDTO> saque(@Valid @RequestBody ContaSaqueDTO dto) {
+        return ResponseEntity.ok(this.service.saque(dto));
+    }
+    
+    @PutMapping(path = "transferencia", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ContaDTO> transferencia(@Valid @RequestBody ContaTransferenciaDTO dto) {
+        return ResponseEntity.ok(this.service.transferencia(dto));
     }
     
 }

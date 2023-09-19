@@ -1,6 +1,7 @@
 package com.minsait.treinamento.model.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -31,4 +32,7 @@ public interface ContaRepository extends GenericCrudRepository<Conta, Long> {
             + "where u.nome = :nome order by c.saldo desc",
            nativeQuery = true)
     List<Conta> achaContasPorNomeUsuarioQueryNativa(String nome);
+    
+    @Query("select c from Conta c where c.numAgencia = :agencia and c.numConta = :conta")
+    Optional<Conta> achaPorAgenciaConta(String agencia, String conta);
 }
