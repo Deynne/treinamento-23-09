@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.minsait.treinamento.dtos.Transacao.ExtratoContaDTO;
 import com.minsait.treinamento.dtos.Transacao.ExtratoUsuarioDTO;
@@ -57,6 +59,10 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                                                             Usuario.class
                                                                 .getSimpleName()));
         
+        if(u.getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_USUARIO_BLOQUEADO,
+                    Conta.class.getSimpleName());
+        
         if(dto.getNome() != null) {
             u.setNome(dto.getNome());
         }
@@ -96,6 +102,10 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                                 }
                             });
         
+        if(u.getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_USUARIO_BLOQUEADO,
+                    Conta.class.getSimpleName());
+        
         this.repository.delete(u);
         
         return toDTO(u);
@@ -133,6 +143,7 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                             .rendaAnual(u.getInfoFinanceira().getRendaAnual())
                             .cpf(u.getDocumentacao().getCpf())
                             .rg(u.getDocumentacao().getRg())
+                            .bloqueado(u.getBloqueado())
                             .build();
     }
 
@@ -143,7 +154,28 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                       .orElseThrow(() -> new GenericException(
                                                   MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO,
                                                   Conta.class.getSimpleName()));
+        if(u.getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_USUARIO_BLOQUEADO,
+                    Conta.class.getSimpleName());
         return transacaoService.encontrarPorUsuario(u);
+    }
+
+
+
+    @Transactional
+    public UsuarioDTO bloqueio(Long id, Boolean bloqueio, Boolean completo) {
+        var u = this.repository.findById(id)
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                Conta.class.getSimpleName()));
+        u.setBloqueado(bloqueio);
+        
+        if(completo) {
+            this.repository.bloqueiaTodasPorUsuario(u, bloqueio);// PQ CARALHOS não posso enviar essa desgraça pro ContaService???????? NAO FAZ SENTIDO....
+        }        
+
+        this.repository.save(u);
+        
+        return toDTO(u);
     }
 
 }

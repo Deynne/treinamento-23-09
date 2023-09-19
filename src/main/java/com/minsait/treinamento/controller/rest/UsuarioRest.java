@@ -2,18 +2,21 @@ package com.minsait.treinamento.controller.rest;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.minsait.treinamento.dtos.Transacao.ExtratoContaDTO;
 import com.minsait.treinamento.dtos.Transacao.ExtratoUsuarioDTO;
+import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioUpdateDTO;
@@ -33,4 +36,13 @@ public class UsuarioRest extends GenericCrudRestImpl<UsuarioService, Long, Usuar
         return ResponseEntity.ok(this.service.extrato(id));
     }
     
+    @PutMapping(path = "bloqueia")
+    public ResponseEntity<UsuarioDTO> bloqueia(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueio){
+        return ResponseEntity.ok(this.service.bloqueio(id, bloqueio, false));
+    }
+    
+    @PutMapping(path = "bloqueia/tudo")
+    public ResponseEntity<UsuarioDTO> bloqueiaTudo(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueio){
+        return ResponseEntity.ok(this.service.bloqueio(id, bloqueio, true));
+    }
 }

@@ -48,6 +48,9 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     ERRO_CONTA_ORIGEM_INVALIDA("erro.conta.origem.invalida", null, TipoMensagem.ERRO),
     ERRO_CONTA_DESTINO_INVALIDA("erro.conta.destino.invalida", null, TipoMensagem.ERRO),
     
+    ERRO_CONTA_BLOQUEADA("erro.conta.bloqueada", null, TipoMensagem.ERRO),
+    ERRO_USUARIO_BLOQUEADO("erro.usuario.bloqueado", null, TipoMensagem.ERRO),
+    
     ALERTA_ELEMENTO_NAO_ENCONTRADO("elemento.nao.encontrado", null, TipoMensagem.ALERTA);
     
     private String codigoMsg;

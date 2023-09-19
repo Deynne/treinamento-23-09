@@ -38,4 +38,8 @@ public class Usuario extends GenericEntity<Long>{
     @Embedded
     @Default
     private Documentacao documentacao = Documentacao.builder().cpf("INVALID").rg("INVALID").build();
+    
+    @Column(nullable = false)
+    @Default 
+    private Boolean bloqueado = false; 
 }

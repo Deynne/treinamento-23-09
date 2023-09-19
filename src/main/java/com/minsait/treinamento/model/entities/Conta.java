@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.Builder.Default;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -36,4 +37,7 @@ public class Conta  extends GenericEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     private Usuario usuario;
 
+    @Column(nullable = false)
+    @Default 
+    private Boolean bloqueado = false; 
 }

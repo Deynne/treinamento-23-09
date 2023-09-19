@@ -87,4 +87,9 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     public ResponseEntity<List<ExtratoContaDTO>> extrato(@NotNull @Positive @RequestParam Long id){
         return ResponseEntity.ok(this.service.extrato(id));
     }
+    
+    @PutMapping(path = "bloqueia")
+    public ResponseEntity<ContaDTO> bloqueia(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueio){
+        return ResponseEntity.ok(this.service.bloqueio(id, bloqueio));
+    }
 }

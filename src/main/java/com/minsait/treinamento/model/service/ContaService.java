@@ -68,6 +68,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 //                                    .nome(c.getUsuario().getNome())
 //                                    .build())
                         .saldo(c.getSaldo())
+                        .bloqueado(c.getBloqueado())
                         .build();
     }
 
@@ -79,6 +80,11 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                                                     ALERTA_ELEMENTO_NAO_ENCONTRADO,
                                                 Conta.class
                                                     .getSimpleName()));
+        
+        if(c.getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
+                    Conta.class.getSimpleName());
+        
         if(dto.getNumAgencia() != null) {
             c.setNumAgencia(dto.getNumAgencia());
         }
@@ -110,9 +116,14 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                         ALERTA_ELEMENTO_NAO_ENCONTRADO,
                     Conta.class
                         .getSimpleName()));
-       this.repository.delete(c);
+        
+        if(c.getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
+                    Conta.class.getSimpleName());
+        
+        this.repository.delete(c);
        
-       return toDTO(c);
+        return toDTO(c);
     }
 
     @Override
@@ -191,6 +202,10 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
             throw new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
                 Conta.class.getSimpleName());
         
+        if(c.get().getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
+                    Conta.class.getSimpleName());
+        
         c.get().setSaldo(
                 c.get().getSaldo() + dto.getValor()
             );
@@ -209,6 +224,10 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         if(c.isEmpty())
             throw new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
                 Conta.class.getSimpleName());
+        
+        if(c.get().getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
+                    Conta.class.getSimpleName());
         
         if(c.get().getSaldo() < dto.getValor())
             throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE,
@@ -237,6 +256,14 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
             throw new GenericException(MensagemPersonalizada.ERRO_CONTA_DESTINO_INVALIDA,
                     Conta.class.getSimpleName());
         
+        if(co.get().getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
+                    Conta.class.getSimpleName());
+        
+        if(cd.get().getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
+                    Conta.class.getSimpleName());
+        
         if(co.get().getSaldo() < dto.getValor())
             throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE,
                     Conta.class.getSimpleName());
@@ -259,7 +286,20 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                       .orElseThrow(() -> new GenericException(
                                                   MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO,
                                                   Conta.class.getSimpleName()));
+        if(c.getBloqueado())
+            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
+                    Conta.class.getSimpleName());
         return transacaoService.encontrarPorConta(c);
     }
 
+
+    public ContaDTO bloqueio(@NotNull @Positive Long id, Boolean bloqueio) {
+        var c = this.repository.findById(id)
+                    .orElseThrow(() -> new GenericException(MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                    Conta.class.getSimpleName()));
+        c.setBloqueado(bloqueio);
+        this.repository.save(c);        
+        return toDTO(c);
+    }
+    
 }

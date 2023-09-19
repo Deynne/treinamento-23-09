@@ -21,5 +21,7 @@ public class UsuarioDTO {
     private String cpf;
     
     private String rg;
+    
+    private Boolean bloqueado;
 
 }
