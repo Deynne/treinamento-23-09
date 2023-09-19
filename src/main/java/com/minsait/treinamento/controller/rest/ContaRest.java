@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.minsait.treinamento.dtos.Transacao.ContaDepositoDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaSaqueDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaTransferenciaDTO;
+import com.minsait.treinamento.dtos.Transacao.ExtratoContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
@@ -80,5 +81,10 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     @PutMapping(path = "transferencia", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ContaDTO> deposita(@Valid @RequestBody ContaTransferenciaDTO dto) {
         return ResponseEntity.ok(this.service.transferencia(dto));
+    }
+    
+    @GetMapping(path = "extrato")
+    public ResponseEntity<List<ExtratoContaDTO>> extrato(@NotNull @Positive @RequestParam Long id){
+        return ResponseEntity.ok(this.service.extrato(id));
     }
 }

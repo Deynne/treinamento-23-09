@@ -18,6 +18,7 @@ import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaDepositoDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaSaqueDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaTransferenciaDTO;
+import com.minsait.treinamento.dtos.Transacao.ExtratoContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
@@ -32,6 +33,8 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private TransacaoService transacaoService;
     
     @Override
     public ContaDTO salvar(@Valid ContaInsertDTO dto) {
@@ -45,6 +48,8 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                         .build();
                         
        c = this.repository.save(c);
+       
+       transacaoService.novaConta(c);
        
        return ContaService.toDTO(c);
     }
@@ -190,6 +195,8 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                 c.get().getSaldo() + dto.getValor()
             );
         this.repository.save(c.get());
+        
+        transacaoService.deposito(c.get(), dto.getValor());
 
         return toDTO(c.get());
     }
@@ -211,6 +218,8 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                 c.get().getSaldo() - dto.getValor()
             );
         this.repository.save(c.get());
+        
+        transacaoService.saque(c.get(), dto.getValor());
         
         return toDTO(c.get());
     }
@@ -238,7 +247,19 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         cd.get().setSaldo(cd.get().getSaldo() + dto.getValor());
         this.repository.save(cd.get());
         
+        transacaoService.transferencia(co.get(), cd.get(), dto.getValor());
+        
         return toDTO(co.get());
+    }
+
+
+    public List<ExtratoContaDTO> extrato(@NotNull @Positive Long id) {
+        Conta c = this.repository
+                      .findById(id)
+                      .orElseThrow(() -> new GenericException(
+                                                  MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                                                  Conta.class.getSimpleName()));
+        return transacaoService.encontrarPorConta(c);
     }
 
 }
