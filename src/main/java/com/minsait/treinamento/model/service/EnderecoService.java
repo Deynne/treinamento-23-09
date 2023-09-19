@@ -72,7 +72,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
     public EnderecoDto atualizar(@Valid EnderecoUpdateDTO dto) {
         Endereco c = this.repository.findById(dto.getId()).orElseThrow(() -> new GenericException(MensagemPersonalizada.
                 ALERTA_ELEMENTO_NAO_ENCONTRADO,
-                Conta.class
+                Endereco.class
                 .getSimpleName()));
         
         if(dto.getBairro() != null) {
@@ -104,7 +104,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
 	public EnderecoDto excluir(@NotNull @Positive Long id) {
 		Endereco c = this.repository.findById(id).orElseThrow(() -> new GenericException(MensagemPersonalizada.
                 ALERTA_ELEMENTO_NAO_ENCONTRADO,
-                Conta.class
+                Endereco.class
                 .getSimpleName()));
 
 	    this.repository.delete(c);
@@ -117,13 +117,12 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
 		 return toDTO(this.repository.findById(id)
 	                .orElseThrow(() -> new GenericException(MensagemPersonalizada.
 	                        ALERTA_ELEMENTO_NAO_ENCONTRADO,
-	                    Conta.class
+	                        Endereco.class
 	                        .getSimpleName())));
 	}
 
 	@Override
 	public List<EnderecoDto> encontrarTodos() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.repository.findAll().stream().map(EnderecoService::toDTO).collect(Collectors.toList());
 	}
 }
