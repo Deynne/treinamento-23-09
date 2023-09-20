@@ -30,4 +30,6 @@ public class UsuarioUpdateDTO {
     
     @Size(min = 9,max = 9)
     private String rg;
+    
+    private Boolean bloqueado;
 }

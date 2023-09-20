@@ -87,4 +87,14 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     public ResponseEntity<Map<String,Double>> transferir(@Valid @RequestBody TransferenciaDTO dto) {
         return ResponseEntity.ok(this.service.transferencia(dto));
     }
+    
+    @PutMapping("bloquear")
+    public ResponseEntity<Boolean> bloquear(@RequestParam @Positive @NotNull Long id) {
+        return ResponseEntity.<Boolean>ok(this.service.bloquear(id));
+    }
+    
+    @PutMapping("desbloquear")
+    public ResponseEntity<Boolean> desbloquear(@RequestParam @Positive @NotNull Long id) {
+        return ResponseEntity.<Boolean>ok(this.service.desbloquear(id));
+    }
 }

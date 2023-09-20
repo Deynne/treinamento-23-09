@@ -45,6 +45,7 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     
     ERRO_SALDO_FINAL_NEGATIVO("saldo.final.negativo", null, TipoMensagem.ERRO),
     ERRO_TRANSACAO_INVALIDA("transacao.invalida", null, TipoMensagem.ERRO),
+    ERRO_BLOQUEIO_DETECTADO("bloqueio.detectado", null, TipoMensagem.ERRO),
     
     ALERTA_ELEMENTO_NAO_ENCONTRADO("elemento.nao.encontrado", null, TipoMensagem.ALERTA);
     

@@ -17,6 +17,6 @@ public class ContaDTO {
     private String numConta;
     private double saldo;
     private Long idUsuario;
-    
+    private boolean bloqueado;
 //    private IdentificadorBasicoDTO<Long> usuario;
 }

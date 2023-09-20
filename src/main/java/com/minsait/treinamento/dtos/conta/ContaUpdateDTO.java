@@ -29,4 +29,6 @@ public class ContaUpdateDTO {
     private Double saldo;
     @Positive
     private Long idUsuario;
+    
+    private Boolean bloqueado;
 }

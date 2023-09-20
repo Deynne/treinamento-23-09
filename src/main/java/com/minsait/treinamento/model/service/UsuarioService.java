@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioUpdateDTO;
@@ -37,6 +38,7 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         Usuario u = Usuario.builder()
                             .nome(dto.getNome())
                             .documentacao(Documentacao.builder().cpf(dto.getCpf()).rg(dto.getRg()).build())
+                            .bloqueado(false)
                             //Podemos realizar este processo assim, criando um novo objeto
 //                            .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
                             .build();
@@ -73,6 +75,10 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         
         if(dto.getRg() != null) {
             u.getDocumentacao().setRg(dto.getRg());
+        }
+        
+        if(dto.getBloqueado() != null) {
+            u.setBloqueado(dto.getBloqueado());
         }
         
         this.repository.save(u);
@@ -138,7 +144,26 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                             .rendaAnual(u.getInfoFinanceira().getRendaAnual())
                             .cpf(u.getDocumentacao().getCpf())
                             .rg(u.getDocumentacao().getRg())
+                            .bloqueado(u.isBloqueado())
                             .build();
+    }
+    
+    public boolean alterarEstadoBloqueioCascata(@NotNull @Positive Long id, boolean bloqueado) {
+        boolean resultado = this.atualizar(UsuarioUpdateDTO.builder().id(id).bloqueado(bloqueado).build()).isBloqueado();
+        
+        if(bloqueado) {
+            this.contaService.bloquearPorUsuario(id);
+        }
+        else {
+            this.contaService.desbloquearPorUsuario(id);
+        }
+        
+        return resultado;
+        
+    }
+    
+    public boolean alterarEstadoBloqueio(@NotNull @Positive Long id, boolean bloqueado) {
+        return this.atualizar(UsuarioUpdateDTO.builder().id(id).bloqueado(bloqueado).build()).isBloqueado();
     }
 
 }

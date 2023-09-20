@@ -35,5 +35,7 @@ public class Conta  extends GenericEntity<Long> {
     @JoinColumn(nullable = false, name = "id_usuario")
     @ManyToOne(fetch = FetchType.LAZY)
     private Usuario usuario;
+    
+    private boolean bloqueado;
 
 }

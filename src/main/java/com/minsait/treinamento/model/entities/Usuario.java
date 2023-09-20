@@ -37,4 +37,6 @@ public class Usuario extends GenericEntity<Long>{
     
     @Embedded
     private Documentacao documentacao;
+    
+    private boolean bloqueado;
 }

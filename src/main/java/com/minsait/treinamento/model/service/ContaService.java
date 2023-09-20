@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
+import com.minsait.treinamento.dtos.conta.DadosContaDTO;
 import com.minsait.treinamento.dtos.conta.TransacaoSimplesDTO;
 import com.minsait.treinamento.dtos.conta.TransferenciaDTO;
 import com.minsait.treinamento.dtos.historicoTransacao.HistoricoTransacaoInsertDTO;
@@ -49,6 +50,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                         .numConta(dto.getNumConta())
                         .saldo(0.0)
                         .usuario(u)
+                        .bloqueado(false)
                         .build();
                         
        c = this.repository.save(c);
@@ -70,6 +72,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 //                                    .nome(c.getUsuario().getNome())
 //                                    .build())
                         .saldo(c.getSaldo())
+                        .bloqueado(c.isBloqueado())
                         .build();
     }
 
@@ -99,6 +102,10 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
             if(!u.getId().equals(c.getUsuario().getId())) {
                 c.setUsuario(u);
             }
+        }
+        
+        if(dto.getBloqueado() != null) {
+            c.setBloqueado(dto.getBloqueado());
         }
         
         this.repository.save(c);
@@ -217,6 +224,10 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                     Conta.class
                         .getSimpleName()));
         
+        if(!this.operacaoPermitida(c)) {
+            throw new GenericException(MensagemPersonalizada.ERRO_BLOQUEIO_DETECTADO);
+        }
+        
         c.setSaldo(c.getSaldo() + dados.getValor());
         
         this.repository.save(c);
@@ -235,6 +246,12 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                         ALERTA_ELEMENTO_NAO_ENCONTRADO,
                     Conta.class
                         .getSimpleName()));
+        
+
+        
+        if(!this.operacaoPermitida(c)) {
+            throw new GenericException(MensagemPersonalizada.ERRO_BLOQUEIO_DETECTADO);
+        }
         
         c.setSaldo(c.getSaldo() - dados.getValor());
         
@@ -266,9 +283,14 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                                             .orElseThrow(() -> new GenericException(MensagemPersonalizada.
                                                                         ALERTA_ELEMENTO_NAO_ENCONTRADO,
                                                                     Conta.class
-                                                                        .getSimpleName()));
+                                                                    .getSimpleName()));
         
-        if(!checkOperacaoValida(dto, origem, destino)) {
+
+        if(!(this.operacaoPermitida(origem) && this.operacaoPermitida(destino))) {
+            throw new GenericException(MensagemPersonalizada.ERRO_BLOQUEIO_DETECTADO);
+        }
+        
+        if(!operacaoValida(dto, origem, destino)) {
             throw new GenericException(MensagemPersonalizada.
                     ERRO_TRANSACAO_INVALIDA);
         }
@@ -308,8 +330,54 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
     }
 
 
-    private boolean checkOperacaoValida(TransferenciaDTO dto, Conta origem, Conta destino) {
+    private boolean operacaoValida(TransferenciaDTO dto, Conta origem, Conta destino) {
         return origem.getUsuario().getId().equals(destino.getUsuario().getId()) || 
                (dto.getCpf() != null && dto.getCpf().equals(destino.getUsuario().getDocumentacao().getCpf()));
+    }
+    
+    
+    @Transactional
+    public boolean operacaoPermitida(@Valid DadosContaDTO dto) {
+        Conta c = this.repository.findByNumAgenciaAndNumConta(dto.getNumAgencia(),dto.getNumConta())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.
+                        ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                    Conta.class
+                        .getSimpleName()));
+        
+        return this.operacaoPermitida(c);
+        
+    }
+    
+    @Transactional
+    public boolean operacaoPermitida(Conta c) {
+        return !(c.isBloqueado() || c.getUsuario().isBloqueado());
+        
+    }
+    
+    public boolean desbloquear(@NotNull @Positive Long id) {
+        return this.atualizar(ContaUpdateDTO.builder().id(id).bloqueado(false).build()).isBloqueado();
+    }
+    
+    public boolean bloquear(@NotNull @Positive Long id) {
+        return this.atualizar(ContaUpdateDTO.builder().id(id).bloqueado(true).build()).isBloqueado();
+    }
+    
+    @Transactional(rollbackFor = Exception.class)
+    public void bloquearPorUsuario(Long idUsuario) {
+        List<Conta> cs = this.repository.findAllByIdUsuario(idUsuario);
+        
+        cs.forEach(c -> c.setBloqueado(true));
+        
+        this.repository.saveAll(cs);
+        
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void desbloquearPorUsuario(Long idUsuario) {
+        List<Conta> cs = this.repository.findAllByIdUsuario(idUsuario);
+        
+        cs.forEach(c -> c.setBloqueado(false));
+        
+        this.repository.saveAll(cs);
     }
 }

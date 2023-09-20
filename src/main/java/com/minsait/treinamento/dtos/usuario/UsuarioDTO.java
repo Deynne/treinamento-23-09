@@ -21,4 +21,6 @@ public class UsuarioDTO {
     
     private String rg;
 
+    private boolean bloqueado;
+
 }

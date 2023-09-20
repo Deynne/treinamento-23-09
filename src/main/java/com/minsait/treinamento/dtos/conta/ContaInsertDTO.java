@@ -26,4 +26,5 @@ public class ContaInsertDTO {
     @NotNull
     @Positive
     private Long idUsuario;
+
 }
