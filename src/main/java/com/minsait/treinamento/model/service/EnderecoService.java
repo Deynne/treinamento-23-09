@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.minsait.treinamento.dtos.endereco.EnderecoDTO;
@@ -15,13 +16,18 @@ import com.minsait.treinamento.dtos.endereco.EnderecoUpdateDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Endereco;
+import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.EnderecoRepository;
 
 @Service
 public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, Long, EnderecoInsertDTO, EnderecoUpdateDTO, EnderecoDTO> {
+
+    @Autowired
+    private UsuarioService usuarioService;
     
     @Override
     public EnderecoDTO salvar(@Valid EnderecoInsertDTO dto) {
+        Usuario u = this.usuarioService.encontrarEntidadePorId(dto.getIdUsuario());
         Endereco e = Endereco.builder()
                              .bairro(dto.getBairro())
                              .cep(dto.getCep())
@@ -29,6 +35,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                              .numero(dto.getNumero())
                              .referencia(dto.getReferencia())
                              .rua(dto.getRua())
+                             .usuario(u)
                              .build();
         
         e = this.repository.save(e);
@@ -45,6 +52,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                 .numero(e.getNumero())
                 .referencia(e.getReferencia())
                 .rua(e.getRua())
+                .idUsuario(e.getUsuario().getId())
                 .build();
     }
 
@@ -77,6 +85,10 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
             e.setRua(dto.getRua());
         }
         
+        if(dto.getIdUsuario() != null) {
+            Usuario u = this.usuarioService.encontrarEntidadePorId(dto.getIdUsuario());
+            e.setUsuario(u);;
+        }
             this.repository.save(e);
         return toDTO(e);
     }
@@ -104,6 +116,12 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
         return this.repository.findAll().stream()
                                         .map(EnderecoService::toDTO)
                                         .collect(Collectors.toList());
+    }
+
+    public void excluirPorIdUsuario(@NotNull @Positive Long id) {
+        List<Endereco> es = this.repository.findAllByidUsuario(id);
+        
+        this.repository.deleteAll(es);
     }
 
 }

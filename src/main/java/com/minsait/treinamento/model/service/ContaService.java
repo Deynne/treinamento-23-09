@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
@@ -118,7 +117,10 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
     @Override
     public List<ContaDTO> encontrarTodos() {
-        return this.repository.findAll().stream().map(ContaService::toDTO).collect(Collectors.toList());
+        return this.repository.findAll()
+                                .stream()
+                                .map(ContaService::toDTO)
+                                .collect(Collectors.toList());
     }
 
 
@@ -131,7 +133,12 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                               .collect(Collectors.toList());
     }
     
-    public List<ContaDTO> acharTodasPorUsuarioEValorMinimoOrdemParametro(@NotNull @Positive Long id,@PositiveOrZero @NotNull Double valorMinimo) {
+    public List<ContaDTO> acharTodasPorUsuarioEValorMinimoOrdemParametro(@NotNull 
+                                                                         @Positive 
+                                                                         Long id,
+                                                                         @PositiveOrZero 
+                                                                         @NotNull 
+                                                                         Double valorMinimo) {
         Usuario u = this.usuarioService.encontrarEntidadePorId(id);
         
         return this.repository.acharContasComDinheiroOrdemParametro(u,valorMinimo)
@@ -141,7 +148,12 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
     }
     
 
-    public List<ContaDTO> acharTodasPorUsuarioEValorNomeParametro(@NotNull @Positive Long id,@PositiveOrZero @NotNull Double valorMinimo) {
+    public List<ContaDTO> acharTodasPorUsuarioEValorNomeParametro(@NotNull 
+                                                                  @Positive 
+                                                                  Long id,
+                                                                  @PositiveOrZero 
+                                                                  @NotNull 
+                                                                  Double valorMinimo) {
         Usuario u = this.usuarioService.encontrarEntidadePorId(id);
         
         return this.repository.acharContasComDinheiroNomeParametro(u,valorMinimo)
@@ -150,7 +162,12 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                               .collect(Collectors.toList());
     }
     
-    public List<ContaDTO> acharTodasPorUsuarioEValorMinimoQueryNativa(@NotNull @Positive Long id,@PositiveOrZero @NotNull Double valorMinimo) {
+    public List<ContaDTO> acharTodasPorUsuarioEValorMinimoQueryNativa(@NotNull 
+                                                                      @Positive 
+                                                                      Long id,
+                                                                      @PositiveOrZero 
+                                                                      @NotNull 
+                                                                      Double valorMinimo) {
         Usuario u = this.usuarioService.encontrarEntidadePorId(id);
         
         return this.repository.acharContasComDinheiroQueryNativa(u,valorMinimo)
@@ -172,6 +189,12 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                 .stream()
                 .map(ContaService::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void excluirPorIdUsuario(@NotNull @Positive Long idUsuario) {
+        List<Conta> cs = this.repository.findAllByIdUsuario(idUsuario);
+        
+        this.repository.deleteAll(cs);
     }
 
 }

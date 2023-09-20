@@ -23,4 +23,13 @@ public class UsuarioInsertDTO {
     @Positive
     @NotNull
     private Double rendaAnual;
+    
+    @NotBlank
+    @Size(min = 11,max = 11)
+    private String cpf;
+    
+    @NotBlank
+    @Size(min = 9,max = 9)
+    private String rg;
+    
 }

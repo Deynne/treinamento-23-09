@@ -37,4 +37,6 @@ public class EnderecoUpdateDTO {
     @Size(min = 3, max = 100)
     private String referencia;
 
+    @Positive
+    private Long idUsuario;
 }

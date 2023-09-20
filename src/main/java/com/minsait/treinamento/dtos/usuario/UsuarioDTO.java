@@ -1,6 +1,5 @@
 package com.minsait.treinamento.dtos.usuario;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +16,9 @@ public class UsuarioDTO {
     private String nome;
     
     private double rendaAnual;
+    
+    private String cpf;
+    
+    private String rg;
 
 }

@@ -24,4 +24,10 @@ public class UsuarioUpdateDTO {
     
     @Positive
     private Double rendaAnual;
+    
+    @Size(min = 11,max = 11)
+    private String cpf;
+    
+    @Size(min = 9,max = 9)
+    private String rg;
 }

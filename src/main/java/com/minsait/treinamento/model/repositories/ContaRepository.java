@@ -31,4 +31,7 @@ public interface ContaRepository extends GenericCrudRepository<Conta, Long> {
             + "where u.nome = :nome order by c.saldo desc",
            nativeQuery = true)
     List<Conta> achaContasPorNomeUsuarioQueryNativa(String nome);
+
+    @Query("select c from Conta c where c.usuario.id = ?1")
+    public List<Conta> findAllByIdUsuario(long idUsuario);  
 }

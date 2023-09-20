@@ -1,16 +1,12 @@
 package com.minsait.treinamento.model.entities;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
+import com.minsait.treinamento.model.entities.embedded.Documentacao;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder.Default;
@@ -38,4 +34,7 @@ public class Usuario extends GenericEntity<Long>{
     @Embedded
     @Default
     private InfoFinanceiraUsuario infoFinanceira = InfoFinanceiraUsuario.builder().rendaAnual(0.0).build();
+    
+    @Embedded
+    private Documentacao documentacao;
 }

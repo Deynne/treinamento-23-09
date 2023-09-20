@@ -2,6 +2,9 @@ package com.minsait.treinamento.model.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -35,4 +38,7 @@ public class Endereco extends GenericEntity<Long> {
     @Column(length = 100)
     private String referencia;
     
+    @JoinColumn(name = "id_usuario")
+    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    private Usuario usuario;
 }

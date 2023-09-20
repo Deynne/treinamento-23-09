@@ -18,4 +18,5 @@ public class EnderecoDTO {
     private String numero;
     private String cep;
     private String referencia;
+    private Long idUsuario;
 }

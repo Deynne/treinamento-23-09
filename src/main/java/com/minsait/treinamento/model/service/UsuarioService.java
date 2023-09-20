@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
@@ -14,17 +16,27 @@ import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioUpdateDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
-import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
 import com.minsait.treinamento.model.entities.Usuario;
+import com.minsait.treinamento.model.entities.embedded.Documentacao;
 import com.minsait.treinamento.model.repositories.UsuarioRepository;
 
 @Service
 public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Long, UsuarioInsertDTO, UsuarioUpdateDTO, UsuarioDTO> {
 
+
+    @Autowired
+    @Lazy
+    private EnderecoService enderecoService;
+    
+    @Autowired
+    @Lazy
+    private ContaService contaService;
+    
     @Override
     public UsuarioDTO salvar(UsuarioInsertDTO dto) {
         Usuario u = Usuario.builder()
                             .nome(dto.getNome())
+                            .documentacao(Documentacao.builder().cpf(dto.getCpf()).rg(dto.getRg()).build())
                             //Podemos realizar este processo assim, criando um novo objeto
 //                            .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
                             .build();
@@ -55,6 +67,14 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
             u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
         }
         
+        if(dto.getCpf() != null) {
+            u.getDocumentacao().setCpf(dto.getCpf());
+        }
+        
+        if(dto.getRg() != null) {
+            u.getDocumentacao().setRg(dto.getRg());
+        }
+        
         this.repository.save(u);
         
         return toDTO(u);
@@ -78,6 +98,9 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                                 }
                             });
         
+        
+        this.enderecoService.excluirPorIdUsuario(id);   
+        this.contaService.excluirPorIdUsuario(id);
         this.repository.delete(u);
         
         return toDTO(u);
@@ -113,6 +136,8 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                             .id(u.getId())
                             .nome(u.getNome())
                             .rendaAnual(u.getInfoFinanceira().getRendaAnual())
+                            .cpf(u.getDocumentacao().getCpf())
+                            .rg(u.getDocumentacao().getRg())
                             .build();
     }
 
