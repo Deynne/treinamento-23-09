@@ -13,6 +13,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +22,12 @@ import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
 import com.minsait.treinamento.dtos.conta.TransacaoSimplesDTO;
 import com.minsait.treinamento.dtos.conta.TransferenciaDTO;
+import com.minsait.treinamento.dtos.historicoTransacao.HistoricoTransacaoInsertDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Usuario;
+import com.minsait.treinamento.model.entities.HistoricoTransacao.TipoTransacao;
 import com.minsait.treinamento.model.repositories.ContaRepository;
 
 @Service
@@ -32,6 +35,10 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    @Lazy
+    private HistoricoTransacaoService historicoTransacaoService;
     
     @Override
     public ContaDTO salvar(@Valid ContaInsertDTO dto) {
@@ -100,11 +107,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
     @Override
     public ContaDTO excluir(@NotNull @Positive Long id) {
-        Conta c = this.repository.findById(id)
-                .orElseThrow(() -> new GenericException(MensagemPersonalizada.
-                        ALERTA_ELEMENTO_NAO_ENCONTRADO,
-                    Conta.class
-                        .getSimpleName()));
+        Conta c = encontrarEntidadePorId(id);
        this.repository.delete(c);
        
        return toDTO(c);
@@ -112,11 +115,16 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
     @Override
     public ContaDTO encontrarPorId(@NotNull @Positive Long id) {
-        return toDTO(this.repository.findById(id)
+        return toDTO(encontrarEntidadePorId(id));
+    }
+
+
+    public Conta encontrarEntidadePorId(Long id) {
+        return this.repository.findById(id)
                 .orElseThrow(() -> new GenericException(MensagemPersonalizada.
                         ALERTA_ELEMENTO_NAO_ENCONTRADO,
                     Conta.class
-                        .getSimpleName())));
+                        .getSimpleName()));
     }
 
     @Override
@@ -201,6 +209,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         this.repository.deleteAll(cs);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Double deposito(@Valid TransacaoSimplesDTO dados) {
         Conta c = this.repository.findByNumAgenciaAndNumConta(dados.getNumAgencia(),dados.getNumConta())
                 .orElseThrow(() -> new GenericException(MensagemPersonalizada.
@@ -211,9 +220,15 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         c.setSaldo(c.getSaldo() + dados.getValor());
         
         this.repository.save(c);
+        this.historicoTransacaoService.salvar(HistoricoTransacaoInsertDTO.builder()
+                                                                         .idContaPrincipal(c.getId())
+                                                                         .tipo(TipoTransacao.DEPOSITO)
+                                                                         .valor(dados.getValor())
+                                                                         .build());
         return c.getSaldo();
     }
     
+    @Transactional(rollbackFor = Exception.class)
     public Double saque(@Valid TransacaoSimplesDTO dados) {
         Conta c = this.repository.findByNumAgenciaAndNumConta(dados.getNumAgencia(),dados.getNumConta())
                 .orElseThrow(() -> new GenericException(MensagemPersonalizada.
@@ -228,6 +243,11 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         }
         
         this.repository.save(c);
+        this.historicoTransacaoService.salvar(HistoricoTransacaoInsertDTO.builder()
+                                                                            .idContaPrincipal(c.getId())
+                                                                            .tipo(TipoTransacao.SAQUE)
+                                                                            .valor(dados.getValor() * -1.0)
+                                                                            .build());
         
         return c.getSaldo();
     }
@@ -263,6 +283,21 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         
         this.repository.save(origem);
         this.repository.save(destino);
+        
+        
+        this.historicoTransacaoService.salvar(HistoricoTransacaoInsertDTO.builder()
+                                                                            .idContaPrincipal(origem.getId())
+                                                                            .idContaRelacionada(destino.getId())
+                                                                            .tipo(TipoTransacao.TRANSFERENCIA)
+                                                                            .valor(dto.getValor()* -1.0)
+                                                                            .build());
+        
+        this.historicoTransacaoService.salvar(HistoricoTransacaoInsertDTO.builder()
+                                                                            .idContaPrincipal(destino.getId())
+                                                                            .idContaRelacionada(origem.getId())
+                                                                            .tipo(TipoTransacao.TRANSFERENCIA)
+                                                                            .valor(dto.getValor())
+                                                                            .build());
         
         Map<String, Double> resultado = new HashMap<>();
         
