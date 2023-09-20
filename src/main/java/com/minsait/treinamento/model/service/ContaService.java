@@ -1,6 +1,8 @@
 package com.minsait.treinamento.model.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
+import com.minsait.treinamento.dtos.conta.TransacaoSimplesDTO;
+import com.minsait.treinamento.dtos.conta.TransferenciaDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Conta;
@@ -197,4 +201,80 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         this.repository.deleteAll(cs);
     }
 
+    public Double deposito(@Valid TransacaoSimplesDTO dados) {
+        Conta c = this.repository.findByNumAgenciaAndNumConta(dados.getNumAgencia(),dados.getNumConta())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.
+                        ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                    Conta.class
+                        .getSimpleName()));
+        
+        c.setSaldo(c.getSaldo() + dados.getValor());
+        
+        this.repository.save(c);
+        return c.getSaldo();
+    }
+    
+    public Double saque(@Valid TransacaoSimplesDTO dados) {
+        Conta c = this.repository.findByNumAgenciaAndNumConta(dados.getNumAgencia(),dados.getNumConta())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.
+                        ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                    Conta.class
+                        .getSimpleName()));
+        
+        c.setSaldo(c.getSaldo() - dados.getValor());
+        
+        if(c.getSaldo() < 0) {
+            throw new GenericException(MensagemPersonalizada.ERRO_SALDO_FINAL_NEGATIVO);
+        }
+        
+        this.repository.save(c);
+        
+        return c.getSaldo();
+    }
+    
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Double> transferencia(@Valid TransferenciaDTO dto) {
+        Conta origem = this.repository.findByNumAgenciaAndNumConta(dto.getNumAgenciaOrigem(),
+                                                                   dto.getNumContaOrigem())
+                                            .orElseThrow(() -> new GenericException(MensagemPersonalizada.
+                                                                    ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                                                                Conta.class
+                                                                    .getSimpleName()));
+        
+        Conta destino = this.repository.findByNumAgenciaAndNumConta(dto.getNumAgenciaDestino(),
+                                                                    dto.getNumContaDestino())
+                                            .orElseThrow(() -> new GenericException(MensagemPersonalizada.
+                                                                        ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                                                                    Conta.class
+                                                                        .getSimpleName()));
+        
+        if(!checkOperacaoValida(dto, origem, destino)) {
+            throw new GenericException(MensagemPersonalizada.
+                    ERRO_TRANSACAO_INVALIDA);
+        }
+        
+        origem.setSaldo(origem.getSaldo() - dto.getValor());
+        
+        if(origem.getSaldo() < 0) {
+            throw new GenericException(MensagemPersonalizada.ERRO_SALDO_FINAL_NEGATIVO);
+        }
+        
+        destino.setSaldo(destino.getSaldo() + dto.getValor());
+        
+        this.repository.save(origem);
+        this.repository.save(destino);
+        
+        Map<String, Double> resultado = new HashMap<>();
+        
+        resultado.put("origem", origem.getSaldo());
+        resultado.put("destino", destino.getSaldo());
+        
+        return resultado;
+    }
+
+
+    private boolean checkOperacaoValida(TransferenciaDTO dto, Conta origem, Conta destino) {
+        return origem.getUsuario().getId().equals(destino.getUsuario().getId()) || 
+               (dto.getCpf() != null && dto.getCpf().equals(destino.getUsuario().getDocumentacao().getCpf()));
+    }
 }

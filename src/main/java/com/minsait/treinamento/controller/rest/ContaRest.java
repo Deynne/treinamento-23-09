@@ -1,7 +1,9 @@
 package com.minsait.treinamento.controller.rest;
 
 import java.util.List;
+import java.util.Map;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -11,6 +13,8 @@ import javax.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
+import com.minsait.treinamento.dtos.conta.TransacaoSimplesDTO;
+import com.minsait.treinamento.dtos.conta.TransferenciaDTO;
+import com.minsait.treinamento.exceptions.GenericException;
+import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.service.ContaService;
 
 @RestController
@@ -59,5 +67,24 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     public ResponseEntity<List<ContaDTO>> achaContasPorNomeUsuarioQueryNativa(@RequestParam @NotBlank @Size(min=3, max=300) String nome) {
         return ResponseEntity.ok(this.service.achaContasPorNomeUsuarioQueryNativa(nome));
     }
+
+    @Override
+    public ResponseEntity<ContaDTO> atualizar(@Valid ContaUpdateDTO dto) {
+        throw new GenericException(MensagemPersonalizada.ERRO_ACESSO_NEGADO);
+    }
     
+    @PutMapping("depositar")
+    public ResponseEntity<Double> depositar(@Valid @RequestBody TransacaoSimplesDTO dto) {
+        return ResponseEntity.ok(this.service.deposito(dto));
+    }
+    
+    @PutMapping("sacar")
+    public ResponseEntity<Double> sacar(@Valid @RequestBody TransacaoSimplesDTO dto) {
+        return ResponseEntity.ok(this.service.saque(dto));
+    }
+    
+    @PutMapping("transferir")
+    public ResponseEntity<Map<String,Double>> transferir(@Valid @RequestBody TransferenciaDTO dto) {
+        return ResponseEntity.ok(this.service.transferencia(dto));
+    }
 }
