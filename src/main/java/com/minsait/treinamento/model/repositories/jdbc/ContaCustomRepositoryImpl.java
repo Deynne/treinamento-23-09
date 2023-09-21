@@ -76,15 +76,19 @@ public class ContaCustomRepositoryImpl implements ContaCustomRepository {
 
             @Override
             public Conta extractData(ResultSet rs) throws SQLException, DataAccessException {
-                rs.first();
-                return Conta.builder()
-                            .id(rs.getLong("id"))
-                            .bloqueado(rs.getBoolean("bloqueado"))
-                            .usuario(Usuario.builder().id(rs.getLong("id_usuario")).build())
-                            .numAgencia(rs.getString("num_agencia"))
-                            .numConta(rs.getString("num_conta"))
-                            .saldo(rs.getDouble("saldo"))
-                            .build();
+                if(rs.next()) {
+                    return Conta.builder()
+                                .id(rs.getLong("id"))
+                                .bloqueado(rs.getBoolean("bloqueado"))
+                                .usuario(Usuario.builder().id(rs.getLong("id_usuario")).build())
+                                .numAgencia(rs.getString("num_agencia"))
+                                .numConta(rs.getString("num_conta"))
+                                .saldo(rs.getDouble("saldo"))
+                                .build();
+                }
+                else { 
+                    return null;
+                }
             }
             
         }, parametros);
