@@ -34,4 +34,9 @@ public class UsuarioRest extends GenericCrudRestImpl<UsuarioService, Long, Usuar
     public ResponseEntity<Boolean> alteraEstadoBloqueioCascata(@RequestParam @Positive @NotNull Long id, boolean bloqueado) {
         return ResponseEntity.<Boolean>ok(this.service.alterarEstadoBloqueioCascata(id, bloqueado));
     }
+    
+    @GetMapping("find-usuario")
+    public void findUsuario(Long id) {
+        this.service.find(id);
+    }
 }

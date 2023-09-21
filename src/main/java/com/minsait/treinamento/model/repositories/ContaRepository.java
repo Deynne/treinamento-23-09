@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Usuario;
+import com.minsait.treinamento.model.repositories.jdbc.ContaCustomRepository;
 
 @Repository
-public interface ContaRepository extends GenericCrudRepository<Conta, Long> {
+public interface ContaRepository extends GenericCrudRepository<Conta, Long>, ContaCustomRepository {
 
     List<Conta> findAllByUsuarioOrderBySaldoDesc(Usuario u);
     

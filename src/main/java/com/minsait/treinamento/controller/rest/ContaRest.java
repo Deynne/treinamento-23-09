@@ -10,6 +10,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -96,5 +97,15 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     @PutMapping("desbloquear")
     public ResponseEntity<Boolean> desbloquear(@RequestParam @Positive @NotNull Long id) {
         return ResponseEntity.<Boolean>ok(this.service.desbloquear(id));
+    }
+    
+    @GetMapping("conta-jdbc-query")
+    public ResponseEntity<ContaDTO> getContaPorJDBC(Long idUsuario, String numAgencia, String numConta) {
+        return new ResponseEntity(this.service.getContaPorJDBCEntityManager(idUsuario,numAgencia,numConta),HttpStatus.OK);
+    }
+    
+    @GetMapping("conta-jdbc-query2")
+    public ResponseEntity<ContaDTO> getContaPorJDBCTemplate(Long idUsuario, String numAgencia, String numConta) {
+        return new ResponseEntity(this.service.getContaPorJDBCTemplace(idUsuario,numAgencia,numConta),HttpStatus.OK);
     }
 }

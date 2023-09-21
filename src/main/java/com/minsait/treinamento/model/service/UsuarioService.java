@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
@@ -21,7 +22,10 @@ import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.entities.embedded.Documentacao;
 import com.minsait.treinamento.model.repositories.UsuarioRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Long, UsuarioInsertDTO, UsuarioUpdateDTO, UsuarioDTO> {
 
 
@@ -166,4 +170,10 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         return this.atualizar(UsuarioUpdateDTO.builder().id(id).bloqueado(bloqueado).build()).isBloqueado();
     }
 
+    public void find(Long id) {
+        IdentificadorBasicoDTO<Long> i =  this.repository.findUsuario(id);
+        
+        log.info(i.toString());
+    }
+    
 }
