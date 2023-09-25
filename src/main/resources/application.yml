@@ -1,3 +1,9 @@
 spring:
     profiles:
+        # Define qual o profile que será usado durante a execução
         active: ${ACTIVE_PROFILE:default}
+
+    autoconfigure:
+        exclude:
+            # Isso impede que o springboot configure o security por conta própria
+            - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
