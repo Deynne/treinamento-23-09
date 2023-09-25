@@ -11,14 +11,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import com.minsait.treinamento.exceptions.GenericException;
+import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Usuario;
-import com.minsait.treinamento.model.repositories.UsuarioRepository;
 
 public class ContaCustomRepositoryImpl implements ContaCustomRepository {
 
-//    @Autowired
-//    private UsuarioRepository usuarioRepository;
     @Autowired
     private EntityManager em;
     
@@ -87,7 +86,7 @@ public class ContaCustomRepositoryImpl implements ContaCustomRepository {
                                 .build();
                 }
                 else { 
-                    return null;
+                    throw new GenericException(MensagemPersonalizada.ALERTA_ELEMENTO_NAO_ENCONTRADO, Conta.class.getSimpleName());
                 }
             }
             
