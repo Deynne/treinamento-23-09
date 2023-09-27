@@ -2,7 +2,6 @@ package com.minsait.treinamento.dtos.historicoTransacao;
 
 import java.time.LocalDateTime;
 
-import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.model.entities.HistoricoTransacao.TipoTransacao;
 
 import lombok.AllArgsConstructor;

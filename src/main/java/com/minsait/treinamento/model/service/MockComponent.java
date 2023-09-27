@@ -18,12 +18,6 @@ public class MockComponent {
     private UsuarioService us;
     
     @Autowired
-    private ContaService cs;
-    
-    @Autowired
-    private EnderecoService es;
-    
-    @Autowired
     private Environment env;
     
     @PostConstruct

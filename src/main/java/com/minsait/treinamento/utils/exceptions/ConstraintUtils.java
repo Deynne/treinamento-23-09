@@ -1,4 +1,4 @@
-package com.minsait.treinamento.utils;
+package com.minsait.treinamento.utils.exceptions;
 
 import java.util.Map;
 

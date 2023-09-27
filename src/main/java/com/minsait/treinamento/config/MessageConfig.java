@@ -14,11 +14,8 @@ import java.util.ResourceBundle.Control;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-
 import com.minsait.treinamento.utils.MessageUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,11 +33,11 @@ public class MessageConfig {
     private Control control;
     
     
-    public MessageConfig(@Value("${treinamento.custom-message.bundle.name}") 
+    public MessageConfig(@Value("${app.custom-message.bundle.name:messages}") 
                          String nome,
-                         @Value("${treinamento.custom-message.bundle.extension}") 
+                         @Value("${app.custom-message.bundle.extension:properties}") 
                          String extensao,
-                         @Value("${treinamento.custom-message.bundle.charset}")
+                         @Value("${app.custom-message.bundle.charset:java.nio.charset.StandardCharsets.UTF_8}")
                          String charset) {
         
         this.nome = nome;

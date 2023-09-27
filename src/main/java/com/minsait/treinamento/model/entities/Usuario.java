@@ -1,12 +1,21 @@
 package com.minsait.treinamento.model.entities;
 
+import java.util.List;
+
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
 import com.minsait.treinamento.model.entities.embedded.Documentacao;
+import com.minsait.treinamento.model.entities.enumerators.security.CargosSistema;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder.Default;
@@ -37,6 +46,18 @@ public class Usuario extends GenericEntity<Long>{
     
     @Embedded
     private Documentacao documentacao;
+    
+    @Column(length = 100, nullable = false, unique = true)
+    private String usuario;
+    
+    @Column(length = 500, nullable = false)
+    private String senha;
+    
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = CargosSistema.class)
+    @CollectionTable(name = "cargos_usuario", joinColumns = {@JoinColumn(name = "id_usuario",nullable = false)})
+    @Column(name = "cargo", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private List<CargosSistema> cargos;
     
     private boolean bloqueado;
 }

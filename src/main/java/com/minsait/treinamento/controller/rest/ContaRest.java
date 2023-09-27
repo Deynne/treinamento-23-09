@@ -101,11 +101,11 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     
     @GetMapping("conta-jdbc-query")
     public ResponseEntity<ContaDTO> getContaPorJDBC(Long idUsuario, String numAgencia, String numConta) {
-        return new ResponseEntity(this.service.getContaPorJDBCEntityManager(idUsuario,numAgencia,numConta),HttpStatus.OK);
+        return new ResponseEntity<>(this.service.getContaPorJDBCEntityManager(idUsuario,numAgencia,numConta),HttpStatus.OK);
     }
     
     @GetMapping("conta-jdbc-query2")
     public ResponseEntity<ContaDTO> getContaPorJDBCTemplate(Long idUsuario, String numAgencia, String numConta) {
-        return new ResponseEntity(this.service.getContaPorJDBCTemplace(idUsuario,numAgencia,numConta),HttpStatus.OK);
+        return new ResponseEntity<>(this.service.getContaPorJDBCTemplace(idUsuario,numAgencia,numConta),HttpStatus.OK);
     }
 }

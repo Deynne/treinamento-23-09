@@ -46,6 +46,10 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     ERRO_SALDO_FINAL_NEGATIVO("saldo.final.negativo", null, TipoMensagem.ERRO),
     ERRO_TRANSACAO_INVALIDA("transacao.invalida", null, TipoMensagem.ERRO),
     ERRO_BLOQUEIO_DETECTADO("bloqueio.detectado", null, TipoMensagem.ERRO),
+    ERRO_TOKEN_NAO_INFORMADO("token.nao.informado", null, TipoMensagem.ERRO),
+    ERRO_CREDENCIAIS_AUSENTES("credenciais.ausentes", null, TipoMensagem.ERRO),
+    ERRO_TOKEN_INVALIDO("erro.token.invalido", null, TipoMensagem.ERRO),
+    
     
     ALERTA_ELEMENTO_NAO_ENCONTRADO("elemento.nao.encontrado", null, TipoMensagem.ALERTA);
     
@@ -74,7 +78,6 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     
     @Override
       public final String getDescricaoMsg(final String... params) {
-//        return FacesUtil.obterTextoMessagesProperties(this.getCodigoMsg(), params);
           return MessageUtil.getMessageReplace(codigoMsg, params);
     }
     @Override
@@ -82,7 +85,6 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
         if(!StringUtils.hasLength(codigoMsgAux))
             return null;
         return MessageUtil.getMessageReplace(codigoMsgAux);
-//        return FacesUtil.obterTextoMessagesProperties(this.getCodigoMsgAuxiliar(), params);
     }
     @Override
     public String getSeveridade() {

@@ -9,10 +9,13 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
-import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioUpdateDTO;
@@ -20,7 +23,9 @@ import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.entities.embedded.Documentacao;
+import com.minsait.treinamento.model.entities.enumerators.security.CargosSistema;
 import com.minsait.treinamento.model.repositories.UsuarioRepository;
+import com.minsait.treinamento.model.security.UsuarioAutenticador;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,12 +42,19 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
     @Lazy
     private ContaService contaService;
     
+    @Autowired
+    @Lazy
+    private PasswordEncoder passwordEncoder;
+    
     @Override
     public UsuarioDTO salvar(UsuarioInsertDTO dto) {
         Usuario u = Usuario.builder()
                             .nome(dto.getNome())
                             .documentacao(Documentacao.builder().cpf(dto.getCpf()).rg(dto.getRg()).build())
                             .bloqueado(false)
+                            .usuario(dto.getUsuario())
+                            .senha(passwordEncoder.encode(dto.getSenha()))
+                            .cargos(dto.getCargos())
                             //Podemos realizar este processo assim, criando um novo objeto
 //                            .infoFinanceira(InfoFinanceiraUsuario.builder().rendaAnual(dto.getRendaAnual()).build())
                             .build();
@@ -52,6 +64,7 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         u = this.repository.save(u);
         
         return toDTO(u);
+        
     }
     
 
@@ -83,6 +96,18 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         
         if(dto.getBloqueado() != null) {
             u.setBloqueado(dto.getBloqueado());
+        }
+        UsuarioAutenticador<Long> usuarioAutenticado = this.autenticado();
+        if(dto.getUsuario() != null) {
+            if(usuarioAutenticado != null && usuarioAutenticado.getAuthorities().contains(CargosSistema.ADMINISTRADOR)) {
+                u.setUsuario(dto.getUsuario());
+            }
+        }
+        
+        if(dto.getSenha() != null) {
+            if(usuarioAutenticado != null && usuarioAutenticado.getAuthorities().contains(CargosSistema.ADMINISTRADOR)) {
+                u.setSenha(passwordEncoder.encode(dto.getSenha()));
+            }
         }
         
         this.repository.save(u);
@@ -174,6 +199,54 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         IdentificadorBasicoDTO<Long> i =  this.repository.findUsuario(id);
         
         log.info(i.toString());
+    }
+    
+    @SuppressWarnings("unchecked")
+    public UsuarioAutenticador<Long> autenticado() {
+        try {
+            SecurityContext context = SecurityContextHolder.getContext();
+            if(context != null) {
+                Authentication auth = context.getAuthentication();
+                if(auth != null) {
+                    Object u = auth.getPrincipal();
+                    if(u instanceof UsuarioAutenticador) {
+                        return (UsuarioAutenticador<Long>) u;
+                    }
+                }
+            }
+            return (UsuarioAutenticador<Long>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(),e);
+            throw new GenericException(MensagemPersonalizada.ERRO_ACESSO_NEGADO,e);
+        }
+    }
+
+
+
+    public Usuario encontrarEntidadePorUsuario(String usuario) {
+        return this.repository.findByUsuario(usuario)
+                .orElseThrow(() -> {
+                    return new GenericException(MensagemPersonalizada.
+                                                    ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                                                Usuario.class
+                                                    .getSimpleName());
+            });
+    }
+
+    public Usuario atualizarSenha(String usuario, String senhaNova) {
+        Usuario u = this.encontrarEntidadePorUsuario(usuario);
+        u.setSenha(senhaNova);
+        
+        return this.repository.save(u);
+    }
+
+
+
+    public UsuarioDTO excluir(String usuario) {
+        Usuario u = this.encontrarEntidadePorUsuario(usuario);
+        this.repository.delete(u);
+        return toDTO(u);
     }
     
 }

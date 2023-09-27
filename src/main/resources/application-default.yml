@@ -15,7 +15,7 @@ spring:
        # Configura um usuário padrão com usuario e senha admin e role ADMIN
         user:
             name: admin
-            password: admin
+            password: usuario_admin
             roles: ADMIN
     # Configura como o sistema trabalhará as interações com o banco de dados
     jpa:
@@ -27,12 +27,8 @@ spring:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     # Configura o acesso ao banco de dados
     datasource:
-        # Variáveis criadas por usuário
-        host: ${DATABASE_HOST:localhost}
-        port: ${DATABASE_PORT:3306}
-        database: ${DATABASE:treinamento}
         # Configuração da url de acesso ao banco
-        url: jdbc:mysql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}?useUnicode=true&autoReconnect=true
+        url: jdbc:mysql://${app.datasource.host}:${app.datasource.port}/${app.datasource.database}?useUnicode=true&autoReconnect=true
         # Usuário e senha do banco
         username: ${DATABASE_USER:treinamento}
         password: ${DATABASE_PASSWORD:treinamento}
@@ -66,11 +62,27 @@ springfox:
         enabled: true
 
 # Variáveis definidas pelo Dev para funções da aplicação
-treinamento:
+app:
     # Define de onde serão tirados os textos das mensagens do app.
     custom-message:
         bundle:
             name: messages-prod
             extension: properties
             charset: java.nio.charset.StandardCharsets.ISO_8859_1
-    security-ativo: true
+    security:
+        security-ativo: true
+        urls-publicas: ${URLS_PUBLICAS:/,/info/**}
+        origens-permitidas: ${ORIGENS_PERMITIDAS:http://localhost:4200}
+        metodos-permitidos: ${METODOS_PERMITIDOS:HEAD,GET,POST,PUT,DELETE,PATCH,OPTIONS}
+        jwt:
+            secret: eQq\997@n*#w
+            expiration: 86400000
+        headers:
+            permitidos: ${HEADERS_PERMITIDOS:Authorization,Cache-Control,Content-Type}
+            expostos: ${HEADERS_EXPOSTOS:Authorization,Cache-Control,Content-Type}
+        
+    # Configura o acesso ao banco de dados
+    datasource:
+        host: ${DATABASE_HOST:localhost}
+        port: ${DATABASE_PORT:3306}
+        database: ${DATABASE:treinamento}

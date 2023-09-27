@@ -1,18 +1,16 @@
 package com.minsait.treinamento.exceptions;
 
-import javax.servlet.ServletRequest;
 import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -31,7 +28,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.minsait.treinamento.dtos.exceptions.ExceptionDTO;
-import com.minsait.treinamento.utils.ConstraintUtils;
+import com.minsait.treinamento.utils.exceptions.ConstraintUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,7 +49,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
         MensagemPersonalizada mensagem = MensagemPersonalizada.ERRO_TIPO_MIDIA_NAO_SUPORTADO;
-        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value(), ex.getContentType().toString());
+        MediaType type = ex.getContentType();
+        final ExceptionDTO body = new ExceptionDTO(mensagem, status.value(), type != null?type.toString():"-");
 
         return this.handleExceptionInternal(ex, body, headers, status, request);
     }
@@ -132,7 +130,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ExceptionDTO body = new ExceptionDTO(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO,HttpStatus.BAD_REQUEST.value(),null);
+        ExceptionDTO body = new ExceptionDTO(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO,HttpStatus.BAD_REQUEST.value());
         
         ex.getAllErrors().forEach(error -> body.addDetalhe(ConstraintUtils.getConstraintMessage(error)));
         return this.handleExceptionInternal(ex, body, headers, status, request);
@@ -194,7 +192,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {ConstraintViolationException.class})
     protected ResponseEntity<Object> trataContentViolationException(final ConstraintViolationException e, WebRequest r) {
-        ExceptionDTO body = new ExceptionDTO(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO,HttpStatus.BAD_REQUEST.value(),null);
+        ExceptionDTO body = new ExceptionDTO(MensagemPersonalizada.ERRO_VALIDACAO_CAMPO,HttpStatus.BAD_REQUEST.value());
         e.getConstraintViolations().forEach(v -> {
             
             body.addDetalhe(ConstraintUtils.getConstraintMessage(v.getConstraintDescriptor().

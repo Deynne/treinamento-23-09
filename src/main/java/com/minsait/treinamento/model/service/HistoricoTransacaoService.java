@@ -19,7 +19,6 @@ import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.HistoricoTransacao;
-import com.minsait.treinamento.model.entities.HistoricoTransacao.TipoTransacao;
 import com.minsait.treinamento.model.repositories.HistoricoTransacaoRepository;
 
 @Service
