@@ -20,6 +20,7 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     ERRO_PARAMETRO_CAMINHO_AUSENTE("parametro.caminho.ausente",null,TipoMensagem.ERRO),
     ERRO_PARAMETRO_AUSENTE("parametro.ausente",null,TipoMensagem.ERRO),
  // Campos Constraints
+    ERRO_CONSTRAINT_DESCONHECIDA("constraint.desconhecida", null, TipoMensagem.ERRO),
     ERRO_CONSTRAINT_CAMPO_OBRIGATORIO("constraint.campo.obrigatorio", null, TipoMensagem.ERRO),
     ERRO_CONSTRAINT_CAMPO_POSITIVO("constraint.campo.positivo", null, TipoMensagem.ERRO),
     ERRO_CONSTRAINT_CAMPO_POSITIVO_OU_ZERO("constraint.campo.positivo.ou.zero", null, TipoMensagem.ERRO),

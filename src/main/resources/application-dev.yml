@@ -1,14 +1,16 @@
 server:
     servlet:
+        # Define o caminho de contexto que a aplicação usuará.
         contextPath: /treinamento
     messages:
         encoding: UTF-8
     tomcat:
         uri-encoding: UTF-8
+    # Define a porta em que a aplicação irá executar
     port: ${PORT:8080}
     
 spring:
-  
+    # Configura como o sistema trabalhará as interações com o banco de dados
     jpa:
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         show-sql: ${SHOW_SQL:true}
@@ -16,14 +18,15 @@ spring:
             ddl-auto: create
             naming:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    # Configura o acesso ao banco de dados
     datasource:
-        host: ${DATABASE_HOST:31.220.109.68}
-        port: ${DATABASE_PORT:3306}
-        database: ${DATABASE:treinamentoindra}
-        url: jdbc:mysql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}?useUnicode=true&autoReconnect=true
+        # Configuração da url de acesso ao banco
+        url: jdbc:mysql://${app.datasource.host}:${app.datasource.port}/${app.datasource.database}?useUnicode=true&autoReconnect=true
+        # Usuário e senha do banco
         username: ${DATABASE_USER:treinamentoindra}
         password: ${DATABASE_PASSWORD:treinamentoindra}
         driverClassName: com.mysql.cj.jdbc.Driver
+        # Configurações do spring para acesso ao banco.
         hikari:
             auto-commit: true
             connection-test-query: select 1 from dual;
@@ -31,6 +34,7 @@ spring:
             minimum-idle: 3
             maximum-pool-size: 100
 
+#Configuração de log
 logging:
     file:
       name: /var/log/treinamento/treinamento.log
@@ -44,9 +48,21 @@ logging:
         console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
         file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
 
-treinamento:
+# Definições relativas ao swagger
+springfox:
+    documentation:
+        # Permite ativar/desativar o swagger
+        enabled: true
+
+# Variáveis definidas pelo Dev para funções da aplicação
+app:
+    # Define de onde serão tirados os textos das mensagens do app.
     custom-message:
         bundle:
-            name: messages
             extension: properties
             charset: java.nio.charset.StandardCharsets.UTF_8
+    # Configura o acesso ao banco de dados
+    datasource:
+        host: ${DATABASE_HOST:31.220.109.68}
+        port: ${DATABASE_PORT:3306}
+        database: ${DATABASE:treinamentoindra}

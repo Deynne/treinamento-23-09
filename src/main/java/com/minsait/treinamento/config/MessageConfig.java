@@ -36,11 +36,11 @@ public class MessageConfig {
     private Control control;
     
     
-    public MessageConfig(@Value("${treinamento.custom-message.bundle.name}") 
+    public MessageConfig(@Value("${app.custom-message.bundle.name:message}") 
                          String nome,
-                         @Value("${treinamento.custom-message.bundle.extension}") 
+                         @Value("${app.custom-message.bundle.extension:properties}") 
                          String extensao,
-                         @Value("${treinamento.custom-message.bundle.charset}")
+                         @Value("${app.custom-message.bundle.charset:java.nio.charset.StandardCharsets.ISO_8859_1}")
                          String charset) {
         
         this.nome = nome;

@@ -8,8 +8,9 @@ import org.springframework.validation.ObjectError;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 
 public class ConstraintUtils {
-private final static String DESCRICAO_PADRAO = "Restrição não mapeada";
     
+    private static final String DESCONHECIDO = "-";
+
     private ConstraintUtils()  {}
     
     
@@ -96,14 +97,14 @@ private final static String DESCRICAO_PADRAO = "Restrição não mapeada";
                 descricao = MensagemPersonalizada.ERRO_CONSTRAINT_CAMPO_PADRAO_REGEX.getDescricaoMsg(field);
                 break;
             default:
-                descricao = DESCRICAO_PADRAO;
+                descricao = MensagemPersonalizada.ERRO_CONSTRAINT_DESCONHECIDA.getDescricaoMsg(field, code);
         }
         return descricao;
     }
     
     public static String getConstraintMessage(String code, String field, Map<String,Object> argumentos) {
         if(code == null)
-            return DESCRICAO_PADRAO;
+            return MensagemPersonalizada.ERRO_CONSTRAINT_DESCONHECIDA.getDescricaoMsg(field, DESCONHECIDO);
         
         return getDescricao(code, field, argumentos);
     }
@@ -114,7 +115,7 @@ private final static String DESCRICAO_PADRAO = "Restrição não mapeada";
 //      List<String> params = new ArrayList<>();
         
         if(code == null)
-            return DESCRICAO_PADRAO;
+            return MensagemPersonalizada.ERRO_CONSTRAINT_DESCONHECIDA.getDescricaoMsg(field,DESCONHECIDO);
         
         return getDescricao(code,field);
     }
@@ -193,7 +194,7 @@ private final static String DESCRICAO_PADRAO = "Restrição não mapeada";
                 descricao = MensagemPersonalizada.ERRO_CONSTRAINT_CAMPO_PADRAO_REGEX.getDescricaoMsg(field);
                 break;
             default:
-                descricao = DESCRICAO_PADRAO;
+                descricao = MensagemPersonalizada.ERRO_CONSTRAINT_DESCONHECIDA.getDescricaoMsg(field,code);
         }
         return descricao;
     }
@@ -270,7 +271,7 @@ private final static String DESCRICAO_PADRAO = "Restrição não mapeada";
                 descricao = MensagemPersonalizada.ERRO_CONSTRAINT_CAMPO_PADRAO_REGEX.getDescricaoMsg(field);
                 break;
             default:
-                descricao = DESCRICAO_PADRAO;
+                descricao = MensagemPersonalizada.ERRO_CONSTRAINT_DESCONHECIDA.getDescricaoMsg(field,code);
         }
         return descricao;
     }

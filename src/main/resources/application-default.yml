@@ -5,10 +5,11 @@ server:
         encoding: UTF-8
     tomcat:
         uri-encoding: UTF-8
-    port: ${PORT:9595}
+    # Define a porta em que a aplicação irá executar
+    port: ${PORT:8080}
     
 spring:
-  
+    # Configura como o sistema trabalhará as interações com o banco de dados
     jpa:
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         show-sql: ${SHOW_SQL:true}
@@ -17,12 +18,11 @@ spring:
             naming:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     datasource:
-        host: ${DATABASE_HOST:localhost}
-        port: ${DATABASE_PORT:3306}
-        database: ${DATABASE:treinamento}
-        url: jdbc:mysql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}?useUnicode=true&autoReconnect=true
-        username: ${DATABASE_USER:treinamento}
-        password: ${DATABASE_PASSWORD:treinamento}
+        # Configuração da url de acesso ao banco
+        url: jdbc:mysql://${app.datasource.host}:${app.datasource.port}/${app.datasource.database}?useUnicode=true&autoReconnect=true
+        # Usuário e senha do banco
+        username: ${DATABASE_USER:treinamentoindra}
+        password: ${DATABASE_PASSWORD:treinamentoindra}
         driverClassName: com.mysql.cj.jdbc.Driver
         hikari:
             auto-commit: true
@@ -44,9 +44,13 @@ logging:
         console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
         file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
 
-treinamento:
+app:
     custom-message:
         bundle:
-            name: messages-prod
             extension: properties
-            charset: java.nio.charset.StandardCharsets.ISO_8859_1
+            charset: java.nio.charset.StandardCharsets.ISO_8859_1        
+    # Configura o acesso ao banco de dados
+    datasource:
+        host: ${DATABASE_HOST:31.220.109.68}
+        port: ${DATABASE_PORT:3306}
+        database: ${DATABASE:treinamentoindra}
