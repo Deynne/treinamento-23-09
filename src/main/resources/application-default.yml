@@ -18,7 +18,7 @@ spring:
             naming:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     datasource:
-        # Configuração da url de acesso ao banco
+        # Configuração da URL de acesso ao banco
         url: jdbc:mysql://${app.datasource.host}:${app.datasource.port}/${app.datasource.database}?useUnicode=true&autoReconnect=true
         # Usuário e senha do banco
         username: ${DATABASE_USER:treinamentoindra}
@@ -33,9 +33,9 @@ spring:
 
 logging:
     file:
-      name: /var/log/treinamento/treinamento.log
-      max-history: 2
-      max-size: 10MB
+        name: /var/log/treinamento/treinamento.log
+        max-history: 2
+        max-size: 10MB
     level:
         root: ERROR
         org.springframework: ERROR   
