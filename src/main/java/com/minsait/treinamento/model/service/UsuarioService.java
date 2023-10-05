@@ -4,22 +4,20 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.minsait.treinamento.dtos.Transacao.ExtratoContaDTO;
 import com.minsait.treinamento.dtos.Transacao.ExtratoUsuarioDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioInsertDTO;
 import com.minsait.treinamento.dtos.usuario.UsuarioUpdateDTO;
 import com.minsait.treinamento.exceptions.GenericException;
 import com.minsait.treinamento.exceptions.MensagemPersonalizada;
-import com.minsait.treinamento.model.embedded.InfoFinanceiraUsuario;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Usuario;
 import com.minsait.treinamento.model.repositories.UsuarioRepository;
@@ -28,7 +26,14 @@ import com.minsait.treinamento.model.repositories.UsuarioRepository;
 public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Long, UsuarioInsertDTO, UsuarioUpdateDTO, UsuarioDTO> {
 
     @Autowired
+    @Lazy
     private TransacaoService transacaoService;
+    @Autowired
+    @Lazy
+    private EnderecoService enderecoService;    
+    @Autowired
+    @Lazy
+    private ContaService contaService;
     
     @Override
     public UsuarioDTO salvar(UsuarioInsertDTO dto) {
@@ -40,8 +45,8 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         
         // Ou assim, utilizando-se do objeto padrão
         u.getInfoFinanceira().setRendaAnual(dto.getRendaAnual());
-        u.getDocumentacao().setCpf(dto.getCpf().replaceAll("[.-]*", ""));
-        u.getDocumentacao().setRg(dto.getRg().replaceAll("[.-]*", ""));
+        u.getDocumentacao().setCpf(dto.getCpf());
+        u.getDocumentacao().setRg(dto.getRg());
         
         u = this.repository.save(u);
         
@@ -72,11 +77,11 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         }
         
         if(dto.getCpf() != null) {
-            u.getDocumentacao().setCpf(dto.getCpf().replaceAll("[.-]*", ""));
+            u.getDocumentacao().setCpf(dto.getCpf());
         }
         
         if(dto.getRg() != null) {
-            u.getDocumentacao().setRg(dto.getRg().replaceAll("[.-]*", ""));
+            u.getDocumentacao().setRg(dto.getRg());
         }
         
         this.repository.save(u);
@@ -86,6 +91,7 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
 
     
     @Override
+    @Transactional
     public UsuarioDTO excluir(@NotNull @Positive Long id) {
         Usuario u = this.repository.findById(id)
                 /**
@@ -105,6 +111,11 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         if(u.getBloqueado())
             throw new GenericException(MensagemPersonalizada.ERRO_USUARIO_BLOQUEADO,
                     Conta.class.getSimpleName());
+        if(contaService.possuiConta(u))
+            throw new GenericException(MensagemPersonalizada.ERRO_USUARIO_DELETE_CONTA_ATIVA,
+                    Conta.class.getSimpleName());
+        
+        this.enderecoService.excluirPorUsuario(u);
         
         this.repository.delete(u);
         
@@ -136,7 +147,7 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
                                 .collect(Collectors.toList());
     }
 
-    public static UsuarioDTO toDTO(@NotNull Usuario u) {
+    private static UsuarioDTO toDTO(@NotNull Usuario u) {
         return UsuarioDTO.builder()
                             .id(u.getId())
                             .nome(u.getNome())
@@ -170,7 +181,7 @@ public class UsuarioService extends GenericCrudServiceImpl<UsuarioRepository, Lo
         u.setBloqueado(bloqueio);
         
         if(completo) {
-            this.repository.bloqueiaTodasPorUsuario(u, bloqueio);// PQ CARALHOS não posso enviar essa desgraça pro ContaService???????? NAO FAZ SENTIDO....
+            contaService.bloquearPorUsuario(u, bloqueio);
         }        
 
         this.repository.save(u);

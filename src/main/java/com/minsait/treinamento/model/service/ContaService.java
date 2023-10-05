@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.minsait.treinamento.dtos.IdentificadorBasicoDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaDepositoDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaSaqueDTO;
 import com.minsait.treinamento.dtos.Transacao.ContaTransferenciaDTO;
@@ -196,87 +195,72 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
 
     @Transactional
     public ContaDTO deposito(ContaDepositoDTO dto) {
-        var c = this.repository.achaPorAgenciaEConta(dto.getAgencia(), dto.getConta());
+        Conta c = this.repository.achaPorAgenciaEConta(dto.getAgencia(), dto.getConta())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
+                                                         Conta.class.getSimpleName()));
         
-        if(c.isEmpty())
-            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
-                Conta.class.getSimpleName());
-        
-        if(c.get().getBloqueado())
+        if(c.getBloqueado() || c.getUsuario().getBloqueado())
             throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
                     Conta.class.getSimpleName());
         
-        c.get().setSaldo(
-                c.get().getSaldo() + dto.getValor()
-            );
-        this.repository.save(c.get());
-        
-        transacaoService.deposito(c.get(), dto.getValor());
+        c.setSaldo(c.getSaldo() + dto.getValor());        
+        this.repository.save(c);        
+        transacaoService.deposito(c, dto.getValor());
 
-        return toDTO(c.get());
+        return toDTO(c);
     }
     
     
     @Transactional
     public ContaDTO saque(ContaSaqueDTO dto) {
-        var c = this.repository.achaPorAgenciaEConta(dto.getAgencia(), dto.getConta());
+        Conta c = this.repository.achaPorAgenciaEConta(dto.getAgencia(), dto.getConta())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
+                                                        Conta.class.getSimpleName()));
         
-        if(c.isEmpty())
-            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_INVALIDA,
-                Conta.class.getSimpleName());
-        
-        if(c.get().getBloqueado())
+        if(c.getBloqueado() || c.getUsuario().getBloqueado())
             throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
                     Conta.class.getSimpleName());
         
-        if(c.get().getSaldo() < dto.getValor())
+        if(c.getSaldo() < dto.getValor())
             throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE,
                     Conta.class.getSimpleName());
         
-        c.get().setSaldo(
-                c.get().getSaldo() - dto.getValor()
-            );
-        this.repository.save(c.get());
+        c.setSaldo(c.getSaldo() - dto.getValor());
+        this.repository.save(c);        
+        transacaoService.saque(c, dto.getValor());
         
-        transacaoService.saque(c.get(), dto.getValor());
-        
-        return toDTO(c.get());
+        return toDTO(c);
     }
 
 
     @Transactional
     public ContaDTO transferencia(@Valid ContaTransferenciaDTO dto) {
-        var co = this.repository.achaPorAgenciaEConta(dto.getAgenciaOrigem(), dto.getContaOrigem());
-        if(co.isEmpty())
-            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_ORIGEM_INVALIDA,
-                Conta.class.getSimpleName());
+        var co = this.repository.achaPorAgenciaEConta(dto.getAgenciaOrigem(), dto.getContaOrigem())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.ERRO_CONTA_ORIGEM_INVALIDA,
+                                                        Conta.class.getSimpleName()));
         
-        var cd = this.repository.achaPorAgenciaEConta(dto.getAgenciaDestino(), dto.getContaDestino());
-        if(cd.isEmpty() || !dto.getCpf().equals(cd.get().getUsuario().getDocumentacao().getCpf()))
-            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_DESTINO_INVALIDA,
-                    Conta.class.getSimpleName());
+        var cd = this.repository.achaPorAgenciaEConta(dto.getAgenciaDestino(), dto.getContaDestino())
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.ERRO_CONTA_DESTINO_INVALIDA,
+                                                        Conta.class.getSimpleName()));
         
-        if(co.get().getBloqueado())
+        if(co.getBloqueado() || co.getUsuario().getBloqueado()
+           || cd.getBloqueado() || cd.getUsuario().getBloqueado())
             throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
                     Conta.class.getSimpleName());
         
-        if(cd.get().getBloqueado())
-            throw new GenericException(MensagemPersonalizada.ERRO_CONTA_BLOQUEADA,
-                    Conta.class.getSimpleName());
-        
-        if(co.get().getSaldo() < dto.getValor())
+        if(co.getSaldo() < dto.getValor())
             throw new GenericException(MensagemPersonalizada.ALERTA_SALDO_INSUFICIENTE,
                     Conta.class.getSimpleName());
         
-        co.get().setSaldo(co.get().getSaldo() - dto.getValor());
-        this.repository.save(co.get());
+        co.setSaldo(co.getSaldo() - dto.getValor());
+        this.repository.save(co);
         
-        cd.get().setSaldo(cd.get().getSaldo() + dto.getValor());
-        this.repository.save(cd.get());
+        cd.setSaldo(cd.getSaldo() + dto.getValor());
+        this.repository.save(cd);
         
-        transacaoService.transferencia(co.get(), cd.get(), dto.getValor());
+        transacaoService.transferencia(co, cd, dto.getValor());
         
-        return toDTO(co.get());
+        return toDTO(co);
     }
 
 
@@ -300,6 +284,21 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
         c.setBloqueado(bloqueio);
         this.repository.save(c);        
         return toDTO(c);
+    }
+
+    
+    public int bloqueioPorUsuario(@NotNull @Positive Long id, Boolean bloqueio) {
+        var u = usuarioService.encontrarEntidadePorId(id);
+        return this.bloquearPorUsuario(u, bloqueio);
+    }
+
+    public int bloquearPorUsuario(Usuario u, Boolean bloqueio) {
+        return this.repository.bloquearTodasPorUsuario(u, bloqueio);
+    }
+
+
+    public boolean possuiConta(Usuario u) {
+        return this.repository.existsByUsuario(u);
     }
     
 }

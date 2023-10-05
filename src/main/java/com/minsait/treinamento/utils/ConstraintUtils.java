@@ -93,7 +93,8 @@ private final static String DESCRICAO_PADRAO = "Restrição não mapeada";
                 descricao = MensagemPersonalizada.ERRO_CONSTRAINT_CAMPO_DATA_PASSADA_OU_PRESENTE.getDescricaoMsg(field);
                 break;
             case ConstantesConstraintsJavax.PATTERN:
-                descricao = MensagemPersonalizada.ERRO_CONSTRAINT_CAMPO_PADRAO_REGEX.getDescricaoMsg(field);
+                String pattern = (String) error.getDefaultMessage();
+                descricao = MensagemPersonalizada.ERRO_CONSTRAINT_CAMPO_PADRAO_REGEX.getDescricaoMsg(field,pattern);
                 break;
             default:
                 descricao = DESCRICAO_PADRAO;

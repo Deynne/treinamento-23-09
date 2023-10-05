@@ -6,10 +6,12 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @AllArgsConstructor
@@ -34,7 +36,8 @@ public class EnderecoInsertDTO {
     private Integer Numero;
 
     @NotBlank
-    @Pattern(regexp = "\\d{2}\\.?\\d{3}-?\\d{3}", message = "00.000-000")
+    @Pattern(regexp = "^\\d{2}\\.?\\d{3}-?\\d{3}$", message = "00.000-000")
+    @Setter(value = AccessLevel.NONE)
     private String CEP;
 
     @Size(max = 100)
@@ -43,4 +46,9 @@ public class EnderecoInsertDTO {
     @NotNull
     @Positive
     private Long UsuarioId;
+    
+    public void setCEP(String value) {
+        this.CEP = value.replaceAll("[.-]*", "");
+    }
+    
 }

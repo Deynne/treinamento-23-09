@@ -1,14 +1,9 @@
 package com.minsait.treinamento.model.service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -61,7 +56,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
         if(StringUtils.hasText(dto.getReferencia()))
             endereco.setReferencia(dto.getReferencia());
         if(StringUtils.hasText(dto.getCEP()))
-            endereco.setCEP(dto.getCEP().replaceAll("[.-]*", ""));
+            endereco.setCEP(dto.getCEP());
         if(dto.getUsuarioId() != null) {
             Usuario u = this.usuarioService.encontrarEntidadePorId(dto.getUsuarioId());
             if( ! u.getId().equals(endereco.getUsuario().getId()))
@@ -110,7 +105,7 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                 .Bairro(dto.getBairro())
                 .Rua(dto.getRua())
                 .Numero(dto.getNumero())
-                .CEP(dto.getCEP().replaceAll("[.-]*", ""))
+                .CEP(dto.getCEP())
                 .Referencia(dto.getReferencia())
                 .usuario(u)
                 .build();
@@ -126,6 +121,11 @@ public class EnderecoService extends GenericCrudServiceImpl<EnderecoRepository, 
                 .stream()
                 .map(EnderecoService::toDTO)
                 .collect(Collectors.toList());
+    }
+
+
+    public int excluirPorUsuario(Usuario u) {
+        return this.repository.excluirTodosPorUsuario(u);        
     }
     
 }

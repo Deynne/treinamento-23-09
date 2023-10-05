@@ -1,7 +1,5 @@
 package com.minsait.treinamento.dtos;
 
-import com.minsait.treinamento.dtos.conta.ContaDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

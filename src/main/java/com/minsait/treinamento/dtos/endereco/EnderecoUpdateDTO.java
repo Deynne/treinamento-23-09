@@ -1,16 +1,17 @@
 package com.minsait.treinamento.dtos.endereco;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
 import org.hibernate.validator.constraints.Length;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +36,7 @@ public class EnderecoUpdateDTO {
     private Integer Numero;
 
     @Pattern(regexp = "\\d{2}\\.?\\d{3}-?\\d{3}", message = "00.000-000")
+    @Setter(value = AccessLevel.NONE)
     private String CEP;
 
     @Length(max = 100)
@@ -42,4 +44,9 @@ public class EnderecoUpdateDTO {
     
     @Positive
     private Long UsuarioId;
+    
+
+    public void setCEP(String value) {
+        this.CEP = value.replaceAll("[.-]*", "");
+    }
 }

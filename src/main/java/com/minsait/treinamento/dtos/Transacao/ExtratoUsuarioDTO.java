@@ -1,9 +1,6 @@
 package com.minsait.treinamento.dtos.Transacao;
 
 import java.util.Date;
-import java.util.Optional;
-
-import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.enumerators.TipoOperacao;
 
 import lombok.AllArgsConstructor;

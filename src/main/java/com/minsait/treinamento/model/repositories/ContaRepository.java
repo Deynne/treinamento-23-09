@@ -14,6 +14,8 @@ import com.minsait.treinamento.model.entities.Usuario;
 public interface ContaRepository extends GenericCrudRepository<Conta, Long> {
 
     List<Conta> findAllByUsuarioOrderBySaldoDesc(Usuario u);
+
+    Boolean existsByUsuario(Usuario usuario);
     
     @Query("select c from Conta c where c.usuario = ?1 and c.saldo >= ?2 order by c.saldo desc")
     List<Conta> acharContasComDinheiroOrdemParametro(Usuario u, double valorMinimo);
@@ -37,6 +39,10 @@ public interface ContaRepository extends GenericCrudRepository<Conta, Long> {
     @Query("select c from Conta c where c.numAgencia = :agencia and c.numConta = :conta")
     Optional<Conta> achaPorAgenciaEConta(String agencia, String conta);
     
+    
+    @Modifying(flushAutomatically = true)
+    @Query("update Conta c set c.bloqueado = :bloqueio where c.usuario = :usuario")
+    int bloquearTodasPorUsuario(Usuario usuario, Boolean bloqueio);
 
     
 }

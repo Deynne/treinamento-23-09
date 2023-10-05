@@ -7,14 +7,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.minsait.treinamento.dtos.Transacao.ExtratoContaDTO;
 import com.minsait.treinamento.dtos.Transacao.ExtratoUsuarioDTO;
-import com.minsait.treinamento.exceptions.GenericException;
-import com.minsait.treinamento.exceptions.MensagemPersonalizada;
 import com.minsait.treinamento.model.entities.Conta;
 import com.minsait.treinamento.model.entities.Transacao;
 import com.minsait.treinamento.model.entities.Usuario;
