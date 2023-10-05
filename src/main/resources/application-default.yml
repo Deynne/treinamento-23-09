@@ -5,15 +5,11 @@ server:
         encoding: UTF-8
     tomcat:
         uri-encoding: UTF-8
+    # Define a porta em que a aplicação irá executar
     port: ${PORT:8080}
     
 spring:
-    cors:
-        allowed-origins: http://localhost:4200
-        allowed-methods: GET, POST, PUT, DELETE
-    profiles:
-        active: default
-  
+    # Configura como o sistema trabalhará as interações com o banco de dados
     jpa:
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         show-sql: ${SHOW_SQL:true}
@@ -22,10 +18,9 @@ spring:
             naming:
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     datasource:
-        host: ${DATABASE_HOST:31.220.109.68}
-        port: ${DATABASE_PORT:3306}
-        database: ${DATABASE:treinamentoindra}
-        url: jdbc:mysql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.database}?useUnicode=true&autoReconnect=true
+        # Configuração da URL de acesso ao banco
+        url: jdbc:mysql://${app.datasource.host}:${app.datasource.port}/${app.datasource.database}?useUnicode=true&autoReconnect=true
+        # Usuário e senha do banco
         username: ${DATABASE_USER:treinamentoindra}
         password: ${DATABASE_PASSWORD:treinamentoindra}
         driverClassName: com.mysql.cj.jdbc.Driver
@@ -38,9 +33,9 @@ spring:
 
 logging:
     file:
-      name: /var/log/treinamento/treinamento.log
-      max-history: 2
-      max-size: 10MB
+        name: /var/log/treinamento/treinamento.log
+        max-history: 2
+        max-size: 10MB
     level:
         root: ERROR
         org.springframework: ERROR   
@@ -49,9 +44,13 @@ logging:
         console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
         file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
 
-treinamento:
+app:
     custom-message:
         bundle:
-            name: messages
             extension: properties
-            charset: java.nio.charset.StandardCharsets.UTF_8
+            charset: java.nio.charset.StandardCharsets.ISO_8859_1        
+    # Configura o acesso ao banco de dados
+    datasource:
+        host: ${DATABASE_HOST:31.220.109.68}
+        port: ${DATABASE_PORT:3306}
+        database: ${DATABASE:treinamentoindra}
