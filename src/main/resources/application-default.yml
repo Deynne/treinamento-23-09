@@ -51,6 +51,7 @@ app:
             charset: java.nio.charset.StandardCharsets.ISO_8859_1        
     # Configura o acesso ao banco de dados
     datasource:
-        host: ${DATABASE_HOST:31.220.109.68}
+        #host: ${DATABASE_HOST:31.220.109.68}
+        host: ${DATABASE_HOST:localhost}
         port: ${DATABASE_PORT:3306}
         database: ${DATABASE:treinamentoindra}

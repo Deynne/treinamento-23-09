@@ -20,6 +20,7 @@ public class InfoRest {
 
     @GetMapping("get-app-config")
     public ResponseEntity<List<String>> getApplicationPropertiesData() {
+        System.out.println("TESTE");
         return ResponseEntity.status(HttpStatus.OK).body(this.service.getInfo());
     }
     
