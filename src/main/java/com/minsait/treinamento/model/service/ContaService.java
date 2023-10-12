@@ -11,6 +11,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +32,10 @@ import com.minsait.treinamento.model.repositories.ContaRepository;
 public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, ContaInsertDTO, ContaUpdateDTO, ContaDTO> {
 
     @Autowired
+    @Lazy
     private UsuarioService usuarioService;
     @Autowired
+    @Lazy
     private TransacaoService transacaoService;
     
     @Override
@@ -133,6 +136,15 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                     Conta.class
                         .getSimpleName())));
     }
+    
+    public Conta encontrarPorIdEntity(@NotNull @Positive Long id) {
+        return this.repository.findById(id)
+                .orElseThrow(() -> new GenericException(MensagemPersonalizada.
+                        ALERTA_ELEMENTO_NAO_ENCONTRADO,
+                    Conta.class
+                        .getSimpleName()));
+    }
+
 
     @Override
     public List<ContaDTO> encontrarTodos() {
@@ -275,7 +287,7 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                     Conta.class.getSimpleName());
         return transacaoService.encontrarPorConta(c);
     }
-
+    
 
     public ContaDTO bloqueio(@NotNull @Positive Long id, Boolean bloqueio) {
         var c = this.repository.findById(id)

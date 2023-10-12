@@ -1,5 +1,6 @@
 package com.minsait.treinamento.model.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,7 @@ public interface TransacaoRepository extends GenericCrudRepository<Transacao, Lo
     
     @Query("select t from Transacao t where t.conta = :conta order by t.data desc")
     List<Transacao> acharPorConta(Conta conta);
+    
+    @Query("select t from Transacao t where t.conta = :conta and t.data >= :aPartirDe and t.data <= :dataFim order by t.data desc")
+    List<Transacao> acharPorContaEDatas(Conta conta, Date aPartirDe, Date dataFim);
 }

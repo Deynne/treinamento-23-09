@@ -51,6 +51,7 @@ public enum MensagemPersonalizada implements GenericCustomMessage {
     ERRO_CONTA_BLOQUEADA("erro.conta.bloqueada", null, TipoMensagem.ERRO),
     ERRO_USUARIO_BLOQUEADO("erro.usuario.bloqueado", null, TipoMensagem.ERRO),
     ERRO_USUARIO_DELETE_CONTA_ATIVA("erro.usuario.delete.conta.ativa", null, TipoMensagem.ERRO),
+    ERRO_EXTRATO_NAO_EXISTE("erro.extrato.nao.existe", null, TipoMensagem.ERRO),
     
     ALERTA_ELEMENTO_NAO_ENCONTRADO("elemento.nao.encontrado", null, TipoMensagem.ALERTA);
     

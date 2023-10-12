@@ -1,5 +1,6 @@
 package com.minsait.treinamento.model.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,10 @@ import com.minsait.treinamento.model.repositories.TransacaoRepository;
 
 @Service
 public class TransacaoService extends GenericCrudServiceImpl<TransacaoRepository, Long, Boolean, Boolean, ExtratoContaDTO>{
+
+    @Autowired
+    @Lazy
+    private ContaService contaService;
     
     public void novaConta(Conta c) {
         var t = Transacao.builder()
@@ -82,6 +89,14 @@ public class TransacaoService extends GenericCrudServiceImpl<TransacaoRepository
                 .collect(Collectors.toList());
     }
     
+    @Transactional
+    public List<ExtratoContaDTO> encontrarPorContaEDatas(Conta c, Date aPartirDe, Date dataFim) {
+        return this.repository.acharPorContaEDatas(c, aPartirDe, new Date())
+                    .stream()
+                    .map(TransacaoService::toContaDTO)
+                    .collect(Collectors.toList());
+    }
+
     public static ExtratoUsuarioDTO toUsuarioDTO(Transacao t) {
         var e = ExtratoUsuarioDTO.builder()
                                 .conta(t.getConta().getNumConta())
@@ -113,7 +128,6 @@ public class TransacaoService extends GenericCrudServiceImpl<TransacaoRepository
     }
     
     
-    
     @Override
     public ExtratoContaDTO salvar(@Valid Boolean dto) {
         // TODO Auto-generated method stub
@@ -138,11 +152,13 @@ public class TransacaoService extends GenericCrudServiceImpl<TransacaoRepository
         return null;
     }
     
-
     @Override
     public List<ExtratoContaDTO> encontrarTodos() {
         // TODO Auto-generated method stub
         return null;
     }
+
+
+
 
 }
