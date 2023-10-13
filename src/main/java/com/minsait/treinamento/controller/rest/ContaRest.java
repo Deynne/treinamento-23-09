@@ -92,4 +92,9 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
     public ResponseEntity<ContaDTO> bloqueia(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueio){
         return ResponseEntity.ok(this.service.bloqueio(id, bloqueio));
     }
+    
+    @PutMapping(path = "altera-estado-bloqueio")
+    public ResponseEntity<ContaDTO> bloqueia2(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueado){
+        return ResponseEntity.ok(this.service.bloqueio(id, bloqueado));
+    }
 }

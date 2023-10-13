@@ -8,6 +8,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,6 +27,8 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Table(name = "conta" , uniqueConstraints = {@UniqueConstraint(columnNames = {"num_agencia","num_conta"})})
+@SQLDelete(sql = "UPDATE conta SET deleted = true WHERE id=?")
+@Where(clause = "deleted=false")
 public class Conta  extends GenericEntity<Long> {
     
     @Column(name = "num_agencia", length = 5,nullable = false)
@@ -40,4 +45,8 @@ public class Conta  extends GenericEntity<Long> {
     @Column(nullable = false)
     @Default 
     private Boolean bloqueado = false; 
+    
+    @Column(nullable = false)
+    @Default
+    private Boolean deleted = false;
 }

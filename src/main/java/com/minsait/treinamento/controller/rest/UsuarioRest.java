@@ -37,7 +37,10 @@ public class UsuarioRest extends GenericCrudRestImpl<UsuarioService, Long, Usuar
     public ResponseEntity<UsuarioDTO> bloqueia(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueio){
         return ResponseEntity.ok(this.service.bloqueio(id, bloqueio, false));
     }
-    
+    @PutMapping(path = "altera-estado-bloqueio")
+    public ResponseEntity<UsuarioDTO> bloqueio2(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueado){
+        return ResponseEntity.ok(this.service.bloqueio(id, bloqueado, false));
+    }
     @PutMapping(path = "bloqueia/tudo")
     public ResponseEntity<UsuarioDTO> bloqueiaTudo(@NotNull @Positive @RequestParam Long id, @NotNull @RequestParam Boolean bloqueio){
         return ResponseEntity.ok(this.service.bloqueio(id, bloqueio, true));
