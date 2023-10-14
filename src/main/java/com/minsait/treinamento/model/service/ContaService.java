@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.minsait.treinamento.controller.rest.ContaRest;
 import com.minsait.treinamento.dtos.conta.ContaDTO;
 import com.minsait.treinamento.dtos.conta.ContaInsertDTO;
 import com.minsait.treinamento.dtos.conta.ContaUpdateDTO;
@@ -203,6 +204,13 @@ public class ContaService extends GenericCrudServiceImpl<ContaRepository, Long, 
                 .map(ContaService::toDTO)
                 .collect(Collectors.toList());
     }
+    
+    public List<String> achaContasPorAgencia(@NotBlank @Size(min = 5, max = 5) String numAgencia) {
+        return this.repository.achaContasPorAgencia(numAgencia).stream().collect(Collectors.toList());
+        
+    }
+    
+
     
     public List<ContaDTO> achaContasPorNomeUsuarioQueryNativa(@NotBlank @Size(min = 3, max = 300) String nome) {
         return this.repository.achaContasPorNomeUsuarioQueryNativa(nome)

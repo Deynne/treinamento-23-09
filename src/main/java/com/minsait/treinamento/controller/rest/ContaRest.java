@@ -64,6 +64,11 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
         return ResponseEntity.ok(this.service.achaContasPorNomeUsuario(nome));
     }
     
+    @GetMapping("contas-por-agencia")
+    public ResponseEntity<List<String>> achaContasPorAgencia(@RequestParam @NotBlank @Size(min=5, max=5) String numAgencia) {
+        return ResponseEntity.ok(this.service.achaContasPorAgencia(numAgencia));
+    }
+    
     @GetMapping("contas-por-nome-query-nativa")
     public ResponseEntity<List<ContaDTO>> achaContasPorNomeUsuarioQueryNativa(@RequestParam @NotBlank @Size(min=3, max=300) String nome) {
         return ResponseEntity.ok(this.service.achaContasPorNomeUsuarioQueryNativa(nome));
@@ -71,7 +76,8 @@ public class ContaRest extends GenericCrudRestImpl<ContaService, Long, ContaInse
 
     @Override
     public ResponseEntity<ContaDTO> atualizar(@Valid ContaUpdateDTO dto) {
-        throw new GenericException(MensagemPersonalizada.ERRO_ACESSO_NEGADO);
+    	return ResponseEntity.ok(this.service.atualizar(dto));
+    	//throw new GenericException(MensagemPersonalizada.ERRO_ACESSO_NEGADO);
     }
     
     @PutMapping("depositar")

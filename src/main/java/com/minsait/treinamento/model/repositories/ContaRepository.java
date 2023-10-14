@@ -28,6 +28,9 @@ public interface ContaRepository extends GenericCrudRepository<Conta, Long>, Con
     @Query("select c from Conta c where c.usuario.nome = :nome order by c.saldo desc")
     List<Conta> achaContasPorNomeUsuario(String nome);
     
+    @Query("select c.numConta from Conta c where c.numAgencia = :numAgencia order by c.numConta desc")
+    List<String> achaContasPorAgencia(String numAgencia);
+    
     @Query(value = "select c.* from conta c "
             + "inner join usuario u on u.id = c.id_usuario "
             + "where u.nome = :nome order by c.saldo desc",

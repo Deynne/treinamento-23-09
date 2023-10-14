@@ -120,4 +120,15 @@ public class HistoricoTransacaoService extends GenericCrudServiceImpl<HistoricoT
         
         return extrato.stream().map(HistoricoTransacaoService::toDTO).collect(Collectors.toList());
     }
+    
+    public List<HistoricoTransacaoDTO> getExtratoContaPeriodo(@Valid DadosContaDTO dto, LocalDateTime timestamp) {
+        if(!this.contaService.operacaoPermitida(dto)) {
+            throw new GenericException(MensagemPersonalizada.ERRO_BLOQUEIO_DETECTADO);
+        }
+        List<HistoricoTransacao> extrato = this.repository.findAllAfterDate(dto.getNumAgencia(),dto.getNumConta(), timestamp);
+        
+        return extrato.stream().map(HistoricoTransacaoService::toDTO).collect(Collectors.toList());
+    }
+    
+    
 }
